@@ -1,0 +1,10 @@
+{
+    "database": {
+        "database": "wetter-app",
+        "username": "KHVanitas",
+        "password": "db-p4ss",
+        "dialect": "sqlite",
+        "storage": "./wetter-app-prod.db",
+        "logging": false
+    }
+}
