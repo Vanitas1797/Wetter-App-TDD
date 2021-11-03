@@ -1,0 +1,21 @@
+GET http://localhost:3000/user/KHVanitas/favorites
+
+###
+
+DELETE http://localhost:3000/user/exist/account
+Content-Type: application/json
+
+{
+    "password": "right"
+}
+
+###
+
+POST http://localhost:3000/user/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "exist",
+    "email": "exist@test.test",
+    "password": "right"
+}
