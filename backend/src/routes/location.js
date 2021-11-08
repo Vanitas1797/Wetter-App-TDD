@@ -15,7 +15,7 @@ router.get('/', getLocationsBySearch);
 router.get('/presentFuture', getLocationsPresentFuture);
 router.get('/past', getLocationsPast);
 
-function getLocationsBySearch(req, res, next) {
+async function getLocationsBySearch(req, res, next) {
   const shouldParams = [
     'cityName',
     'countryName',
@@ -36,88 +36,51 @@ function getLocationsBySearch(req, res, next) {
       req.body[shouldParams[4]],
       req.body[shouldParams[5]],
     ];
-    db.all(
-      queries.getAllLocationsFromUserInput,
-      selectParams,
-      async (err, rows) => {
-        if (err) {
-          return next(err);
-        } else {
-          if (rows.length) {
-            return res.json(rows);
+    let rows = await all(queries.getAllLocationsFromUserInput, selectParams);
+    if (rows.length) {
+      return res.json(rows);
+    } else {
+      try {
+        const response = await axios.get(
+          `http://api.openweathermap.org/geo/1.0/zip?zip=${req.body.zipCode},${req.body.countryCode}&appid=${apiKey}`
+        );
+      } catch (error) {
+        error.message += ': ' + error.response.data.message;
+        console.log(error.stack + '\n');
+        try {
+          const response = await axios.get(
+            `http://api.openweathermap.org/geo/1.0/direct?q=${req.body.cityName},${req.body.stateCode},${req.body.countryCode}&limit=${limit}&appid=${apiKey}`
+          );
+          const data = response.data;
+          if (!data.length) {
+            return next(createHttpError.NotFound());
           } else {
-            try {
-              const response = await axios.get(
-                `http://api.openweathermap.org/geo/1.0/zip?zip=${req.body.zipCode},${req.body.countryCode}&appid=${apiKey}`
+            for (let d of data) {
+              let row = await get(
+                queries.getCountryCodeIdFromCountryCode2OrCountryCode3,
+                d.country
               );
-            } catch (error) {
-              error.message += ': ' + error.response.data.message;
-              console.error(error.stack);
-              try {
-                const response = await axios.get(
-                  `http://api.openweathermap.org/geo/1.0/direct?q=${req.body.cityName},${req.body.stateCode},${req.body.countryCode}&limit=${limit}&appid=${apiKey}`
-                );
-                const data = response.data;
-                if (!data.length) {
-                  return next(createHttpError.NotFound());
-                } else {
-                  for (let d of data) {
-                    db.get(
-                      queries.getCountryCodeIdFromCountryCode2OrCountryCode3,
-                      d.country,
-                      async (err, row) => {
-                        if (err) {
-                          return next(err);
-                        } else {
-                          if (!row) {
-                            return next(createHttpError.NotFound());
-                          } else {
-                            let insertParams = [
-                              d.name,
-                              d.state,
-                              row.country,
-                              '',
-                              d.lat,
-                              d.lon,
-                            ];
-                            db.run(
-                              queries.saveNewLocationsFromUserInput,
-                              insertParams,
-                              (err) => {
-                                if (err) {
-                                  return next(err);
-                                }
-                              }
-                            );
-                          }
-                        }
-                      }
-                    );
-                  }
-                  db.all(
-                    queries.getAllLocationsFromUserInput,
-                    selectParams,
-                    (err, rows) => {
-                      if (err) {
-                        return next(err);
-                      } else {
-                        if (rows.length) {
-                          return res.json(rows);
-                        } else {
-                          return next(createHttpError.NotFound());
-                        }
-                      }
-                    }
-                  );
-                }
-              } catch (error) {
-                return next(error);
-              }
+              let insertParams = [
+                d.name,
+                d.state,
+                row.country,
+                '',
+                d.lat,
+                d.lon,
+              ];
+              await run(queries.saveNewLocationsFromUserInput, insertParams);
             }
+            let rows = await all(
+              queries.getAllLocationsFromUserInput,
+              selectParams
+            );
+            res.json(rows);
           }
+        } catch (error) {
+          return next(error);
         }
       }
-    );
+    }
   }
 }
 

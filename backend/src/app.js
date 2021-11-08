@@ -27,8 +27,8 @@ app.use(function (err, req, res, next) {
       },
     };
     res.status(errObj.error.statusCode);
-    console.error(err);
     res.send(errObj);
+    console.error(err.stack);
   }
 });
 

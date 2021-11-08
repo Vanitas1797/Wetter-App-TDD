@@ -69,7 +69,7 @@ function run(sql, params) {
   });
 }
 
-function get(sql, params) {
+async function get(sql, params) {
   return new Promise((resolve, reject) => {
     db.get(sql, params, (err, row) => {
       if (err) {
@@ -81,4 +81,4 @@ function get(sql, params) {
   });
 }
 
-module.exports = { db, queries, all, run, get };
+module.exports = { queries, all, run, get };
