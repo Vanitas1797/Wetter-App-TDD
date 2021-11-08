@@ -1,19 +1,18 @@
 const createError = require('http-errors');
 
 function validateParamsOrQuery(values, object) {
-  let err;
+  let errorMessages = [];
+  let error = null;
   for (const key of values) {
-    if (!object[key]) {
-      err = err || new Error();
-      err.message = err.message || 'Keys are wrong or missing: ';
-      err.message += key + ', ';
+    if (typeof object[key] === 'undefined') {
+      error = error || 'Keys are wrong or missing: ';
+      errorMessages.push(key);
     }
   }
-  if (err) {
-    err.message = err.message.slice(0, err.message.length - 2);
-    err = createError.BadRequest(err);
+  if (error) {
+    error = createError.BadRequest(error + errorMessages.join(', '));
   }
-  return err;
+  return error;
 }
 
 module.exports = { validateParamsOrQuery };

@@ -17,7 +17,7 @@ function getAllFavoritesOfOneUser(req, res, next) {
   db.all(queries.getAllFavoritesOfOneUser, params, (err, rows) => {
     if (err) {
       return next(err);
-    } else if (rows.length > 0) {
+    } else if (rows.length) {
       return res.json(rows);
     } else {
       return next(createHttpError.NotFound());

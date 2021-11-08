@@ -1,5 +1,5 @@
-select *
+select pk_location_id, city_name, state_code, country_name, zip_code, latitude, longitude
 from location as l
-join country_code as cc on cc.pk_country_code_id = l.fk_country_code_id
-where city_name like ? or state_code like ? or zip_code like ? or latitude like ? or longitude like ?
+join country_code as cc on cc.country = l.country_name
+where city_name like ? or country like ? or state_code like ? or zip_code like ? or latitude like ? or longitude like ?
 order by city_name asc

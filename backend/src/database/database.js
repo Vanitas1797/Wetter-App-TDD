@@ -23,9 +23,9 @@ const queries = {
       'backend/src/database/queries/saveNewLocationsFromUserInput.sql'
     )
     .toString(),
-  getCountryCodeIdFromCountryCode2: fs
+  getCountryCodeIdFromCountryCode2OrCountryCode3: fs
     .readFileSync(
-      'backend/src/database/queries/getCountryCodeIdFromCountryCode2.sql'
+      'backend/src/database/queries/getCountryCodeIdFromCountryCode2OrCountryCode3.sql'
     )
     .toString(),
   deleteUserAccount: fs
@@ -34,15 +34,51 @@ const queries = {
   getUserByUsername: fs
     .readFileSync('backend/src/database/queries/getUserByUsername.sql')
     .toString(),
-    postRegisterNewUser: fs
+  postRegisterNewUser: fs
     .readFileSync('backend/src/database/queries/postRegisterNewUser.sql')
     .toString(),
-    putResetPassword: fs
+  putResetPassword: fs
     .readFileSync('backend/src/database/queries/putResetPassword.sql')
     .toString(),
-    getUserByUsernameOrEmail: fs
+  getUserByUsernameOrEmail: fs
     .readFileSync('backend/src/database/queries/getUserByUsernameOrEmail.sql')
     .toString(),
 };
 
-module.exports = { db, queries };
+function all(sql, params) {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+function run(sql, params) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+}
+
+function get(sql, params) {
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  });
+}
+
+module.exports = { db, queries, all, run, get };

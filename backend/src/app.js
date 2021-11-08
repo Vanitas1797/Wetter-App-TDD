@@ -15,6 +15,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/user', require('./routes/user').router);
+app.use('/location', require('./routes/location').router);
 
 // error handler
 app.use(function (err, req, res, next) {
@@ -26,7 +27,7 @@ app.use(function (err, req, res, next) {
       },
     };
     res.status(errObj.error.statusCode);
-    console.log(err);
+    console.error(err);
     res.send(errObj);
   }
 });
