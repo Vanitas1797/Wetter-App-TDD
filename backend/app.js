@@ -1,21 +1,24 @@
-const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const fs = require('fs');
 
 const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/user', require('./routes/user').router);
-app.use('/location', require('./routes/location').router);
+app.use('/user', require('./routes/user'));
+app.use('/location', require('./routes/location'));
+
+fs.copyFileSync(
+  `backend/database/db/wetter-app-copy.db`,
+  `backend/database/db/wetter-app-dev.db`
+);
 
 // error handler
 app.use(function (err, req, res, next) {
@@ -27,7 +30,7 @@ app.use(function (err, req, res, next) {
       },
     };
     res.status(errObj.error.statusCode);
-    res.send(errObj);
+    res.json(errObj);
     console.error(err.stack);
   }
 });

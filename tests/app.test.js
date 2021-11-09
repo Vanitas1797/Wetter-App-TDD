@@ -2,9 +2,9 @@ const config = require('config');
 const dbConfig = config.get('database');
 const sqlite = require('sqlite3');
 const request = require('supertest');
-const app = require('../backend/src/app');
+const app = require('../backend/app');
 const fs = require('fs');
-const user = require('../backend/src/routes/user');
+const user = require('../backend/routes/user');
 const createHttpError = require('http-errors');
 
 let db = new sqlite.Database(dbConfig.storage);
@@ -245,7 +245,7 @@ beforeAll(() => {
   //   }
   // });
   fs.copyFileSync(
-    `backend/src/database/db/wetter-app-test-copy.db`,
-    `backend/src/database/db/wetter-app-test.db`
+    `backend/database/db/wetter-app-copy.db`,
+    `backend/database/db/wetter-app-test.db`
   );
 });

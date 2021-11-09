@@ -10,9 +10,8 @@ function validateParamsOrQuery(values, object) {
     }
   }
   if (error) {
-    error = createError.BadRequest(error + errorMessages.join(', '));
+    throw (error = createError.BadRequest(error + errorMessages.join(', ')));
   }
-  return error;
 }
 
 module.exports = { validateParamsOrQuery };

@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-const app = require('./backend/src/app');
+const app = require('./backend/app');
 const http = require('http');
 
 /**
