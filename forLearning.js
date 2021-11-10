@@ -1,5 +1,9 @@
 const { default: axios } = require('axios');
-// const db = new sqlite.Database(dbConfig.storage);
+const fs = require('fs');
+const path = require('path');
+const cronjob = require('./backend/generate/objects/cronjob.json');
+const generate = require('./backend/generate/generate');
+const currentAndForecastWeatherData = require('./backend/generate/objects/currentAndForecastWeatherData.json');
 
 async function test() {
   const response = await axios.get(
@@ -42,16 +46,40 @@ async function test() {
   }
 }
 
-const currentAndForecastWeatherData = require('./backend/objects/raw/currentAndForecastWeatherData.json');
-const currentAndForecastWeatherDataM = require('./backend/objects/mapped/currentAndForecastWeatherData.json');
-const { generate } = require('./backend/generate/generate');
-
-async function test2() {
-  // const response = await axios.get('dsa');
-  // response.data[currentAndForecastWeatherDataM.current.dt]
-  generate.createFile('currentAndForecastWeatherData.json');
-  let log = currentAndForecastWeatherDataM.daily;
-  console.log(log);
+async function test2(path) {
+  let dirs = fs.readdirSync('./', { withFileTypes: true });
+  for (let d of dirs) {
+    d.isDirectory();
+  }
+  console.log(dirs);
 }
 
-test2();
+async function test3(params) {
+  const response = await axios.get(
+    `https://api.openweathermap.org/data/2.5/onecall?lat=1&lon=99&exclude=minutely&appid=cea910880ce57c3997f3b4e5e34f25fe&units=metric`
+  );
+  currentAndForecastWeatherData = response.data;
+  console.log(currentAndForecastWeatherData.current);
+}
+
+function test4() {
+  cronjob.lastUpdatedOpenWeatherApi = 2;
+  generate.updateJsonFile('./backend/generate/objects/cronjob.json', cronjob);
+}
+
+async function test5(params) {
+  let dt = currentAndForecastWeatherData.current.dt;
+  let realDt = new Date(dt * 1000);
+  let now = new Date().getTime();
+  // console.log(currentAndForecastWeatherData.current.dt);
+  // console.log(now);
+  // console.log(realDt);
+  let date = parseInt(
+    new Date((dt ) * 1000)
+      .toLocaleTimeString()
+      .slice(0, 2)
+  );
+  console.log(date);
+}
+
+test5();
