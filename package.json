@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=development nodemon",
+    "start": "cross-env NODE_ENV=development nodemon --ignore *.json",
     "test": "cross-env NODE_ENV=test jest --watchAll --detectOpenHandles --coverage"
   },
   "dependencies": {

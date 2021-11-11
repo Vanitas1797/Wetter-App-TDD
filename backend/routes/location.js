@@ -1,5 +1,3 @@
-'use strict';
-
 const express = require('express');
 const database = require('../database/database');
 const { validateParamsOrQuery } = require('../validation/routes');
@@ -7,11 +5,6 @@ const createHttpError = require('http-errors');
 const { default: axios } = require('axios');
 const router = express.Router();
 
-const apiKey = 'cea910880ce57c3997f3b4e5e34f25fe';
-const limit = 50;
-const exclude = 'minutely';
-const units = 'metric';
-const lang = 'de';
 const updateApiEveryTenMinutes = 1000 * 60 * 10;
 
 // /location
@@ -26,6 +19,8 @@ const windDirection = require('../database/tables/windDirection');
 const location = require('../database/tables/location');
 const skyState = require('../database/tables/skyState');
 const weatherDataDay = require('../database/tables/weatherDataDay');
+const config = require('../../config/development.json');
+let reverseGeocoding = require('../generate/objects/reverseGeocoding.json');
 
 async function getLocationsBySearch(req, res, next) {
   try {
@@ -53,44 +48,45 @@ async function getLocationsBySearch(req, res, next) {
     if (rows.length) {
       return res.json(rows);
     } else {
+      let response;
       try {
-        const response = await axios.get(
-          `http://api.openweathermap.org/geo/1.0/zip?zip=${req.body.zipCode},${req.body.countryCode}&appid=${apiKey}`
+        response = await axios.get(
+          `http://api.openweathermap.org/geo/1.0/zip?zip=${req.body.zipCode},${req.body.countryCode}&appid=${config.weatherApi.apiKey}`
         );
       } catch (error) {
         error.message += ': ' + error.response.data.message;
         console.log(error.stack + '/n');
-        const response = await axios.get(
-          `http://api.openweathermap.org/geo/1.0/direct?q=${req.body.cityName},${req.body.stateCode},${req.body.countryName}&limit=${limit}&appid=${apiKey}`
+        response = await axios.get(
+          `http://api.openweathermap.org/geo/1.0/direct?q=${req.body.cityName},${req.body.stateCode},${req.body.countryName}&limit=${config.weatherApi.limit}&appid=${config.weatherApi.apiKey}`
         );
-        const data = response.data;
-        if (!data.length) {
-          return next(createHttpError.NotFound());
-        } else {
-          for (let d of data) {
-            let row1 = await database.get(database.queries.getCountry, [
-              d.country,
-            ]);
-            let row2 = await database.get(database.queries.getState, [d.state]);
-            let insertParams = [
-              d.name,
-              row2 ? row2.state : null,
-              row1.country,
-              null,
-              d.lat,
-              d.lon,
-            ];
-            await database.run(
-              database.queries.saveNewLocationsFromUserInput,
-              insertParams
-            );
-          }
-          let rows = await database.all(
-            database.queries.getAllLocationsFromUserInput,
-            selectParams
+      }
+      const data = response.data;
+      if (!data.length) {
+        return next(createHttpError.NotFound());
+      } else {
+        for (let d of data) {
+          let row1 = await database.get(database.queries.getCountry, [
+            d.country,
+          ]);
+          let row2 = await database.get(database.queries.getState, [d.state]);
+          let insertParams = [
+            d.name,
+            row2 ? row2.state_name : null,
+            row1.country_name,
+            null,
+            d.lat,
+            d.lon,
+          ];
+          await database.run(
+            database.queries.saveNewLocationsFromUserInput,
+            insertParams
           );
-          return res.json(rows);
         }
+        let rows = await database.all(
+          database.queries.getAllLocationsFromUserInput,
+          selectParams
+        );
+        return res.json(rows);
       }
     }
   } catch (error) {
@@ -116,36 +112,39 @@ async function getLocationsPresentFuture(req, res, next) {
       cronjob.lastUpdatedOpenWeatherApi = now.getTime();
       generate.updateJsonFile('backend/generate/objects/cronjob.json', cronjob);
       const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/onecall?lat=${req.body.latitude}&lon=${req.body.longitude}&exclude=${exclude}&appid=${apiKey}&units=${units}&lang=${lang}`
+        `https://api.openweathermap.org/data/2.5/onecall?lat=${req.body.latitude}&lon=${req.body.longitude}&exclude=${config.weatherApi.exclude}&appid=${config.weatherApi.apiKey}&units=${config.weatherApi.units}&lang=${config.weatherApi.lang}`
       );
       currentAndForecastWeatherData = response.data;
       let current = currentAndForecastWeatherData.current;
       let daily = currentAndForecastWeatherData.daily;
       let hourly = currentAndForecastWeatherData.hourly;
+      let dayTime = (time) =>
+        (time + currentAndForecastWeatherData.timezone_offset) * 1000;
       for (let d of daily) {
-        let date = new Date(
-          (d.dt + currentAndForecastWeatherData.timezone_offset) * 1000
-        ).toLocaleDateString();
-        let row = await database.get(database.queries.getWeatherDataDay, date);
+        let date = new Date(dayTime(d.dt)).toLocaleDateString();
+        let row = await database.get(
+          database.queries.getWeatherDataDayId,
+          date
+        );
         if (!row) {
           let paramsForInsertDaily = [
-            await location.getLocation(
+            await location.getLocationId(
               currentAndForecastWeatherData.lat,
               currentAndForecastWeatherData.lon
             ),
             date,
             d.temp.max,
             d.temp.min,
-            await skyState.getSkyState(d.weather[0].description),
+            await skyState.getSkyStateName(d.weather[0].description),
             d.wind_speed,
             d.wind_gust,
             d.wind_deg,
-            await windDirection.getWindDirection(d.wind_deg),
+            await windDirection.getWindDirectionName(d.wind_deg),
             d.pop,
             d.humidity,
             d.pressure,
-            d.sunrise,
-            d.sunset,
+            new Date(dayTime(d.sunrise)).toLocaleTimeString(),
+            new Date(dayTime(d.sunset)).toLocaleTimeString(),
             null,
             now.getTime(),
           ];
@@ -161,7 +160,7 @@ async function getLocationsPresentFuture(req, res, next) {
             d.wind_speed,
             d.wind_gust,
             d.wind_deg,
-            await windDirection.getWindDirection(d.wind_deg),
+            await windDirection.getWindDirectionName(d.wind_deg),
             d.pop,
             d.humidity,
             d.pressure,
@@ -179,16 +178,12 @@ async function getLocationsPresentFuture(req, res, next) {
       }
       for (let h of hourly) {
         let hour = parseInt(
-          new Date(
-            (h.dt + currentAndForecastWeatherData.timezone_offset) * 1000
-          )
-            .toLocaleTimeString()
-            .slice(0, 2)
+          new Date(dayTime(h.dt)).toLocaleTimeString().slice(0, 2)
         ).toString();
         let row = await database.get(database.queries.getWeatherDataHour, hour);
         if (!row) {
           let paramsForInsertHourly = [
-            await weatherDataDay.getWeatherDataDay(
+            await weatherDataDay.getWeatherDataDayId(
               new Date(
                 (daily[0].dt + currentAndForecastWeatherData.timezone_offset) *
                   1000
@@ -197,11 +192,11 @@ async function getLocationsPresentFuture(req, res, next) {
             hour,
             h.temp,
             h.feels_like,
-            await skyState.getSkyState(h.weather[0].description),
+            await skyState.getSkyStateName(h.weather[0].description),
             h.wind_speed,
             h.wind_gust,
             h.wind_deg,
-            await windDirection.getWindDirection(h.wind_deg),
+            await windDirection.getWindDirectionName(h.wind_deg),
             h.pop,
             h.humidity,
             h.pressure,
@@ -214,11 +209,11 @@ async function getLocationsPresentFuture(req, res, next) {
           let paramsForUpdateHourly = [
             h.temp,
             h.feels_like,
-            await skyState.getSkyState(h.weather[0].description),
+            await skyState.getSkyStateName(h.weather[0].description),
             h.wind_speed,
             h.wind_gust,
             h.wind_deg,
-            await windDirection.getWindDirection(h.wind_deg),
+            await windDirection.getWindDirectionName(h.wind_deg),
             h.pop,
             h.humidity,
             h.pressure,

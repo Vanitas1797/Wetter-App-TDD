@@ -1,4 +1,4 @@
 -- SQLite
-SELECT pk_sky_state
+SELECT pk_sky_state_name
 FROM sky_state
-WHERE pk_sky_state = ?
+WHERE pk_sky_state_name = ?

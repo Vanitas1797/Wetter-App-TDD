@@ -40,8 +40,8 @@ GET http://localhost:3000/location/presentFuture HTTP/1.1
 Content-Type: application/json
 
 {
-    "latitude": "1",
-    "longitude": "99"
+    "latitude": "0.9752",
+    "longitude": "98.999"
 }
 
 ###

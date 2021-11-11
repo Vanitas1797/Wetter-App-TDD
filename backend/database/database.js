@@ -76,7 +76,7 @@ const queries = {
 
 function all(sql, ...params) {
   return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
+    db.all(sql, ...params, (err, rows) => {
       if (err) {
         reject(err);
       } else {
@@ -88,7 +88,7 @@ function all(sql, ...params) {
 
 function run(sql, ...params) {
   return new Promise((resolve, reject) => {
-    db.run(sql, params, (err) => {
+    db.run(sql, ...params, (err) => {
       if (err) {
         reject(err);
       } else {
@@ -100,7 +100,7 @@ function run(sql, ...params) {
 
 function get(sql, ...params) {
   return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
+    db.get(sql, ...params, (err, row) => {
       if (err) {
         reject(err);
       } else {

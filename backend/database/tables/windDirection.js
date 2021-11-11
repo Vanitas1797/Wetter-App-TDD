@@ -1,8 +1,9 @@
 const database = require('../database');
 
-function getWindDirection(windDegree) {
+async function getWindDirectionName(windDegree) {
   let deg = Math.floor(windDegree / 45) * 45;
-  return database.get(database.queries.getWindDirection, deg);
+  let row = await database.get(database.queries.getWindDirection, deg);
+  return row.wind_direction_name;
 }
 
-module.exports = { getWindDirection };
+module.exports = { getWindDirectionName };
