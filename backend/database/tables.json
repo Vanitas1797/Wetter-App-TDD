@@ -1,0 +1,8 @@
+{
+    "astronomy": {
+        "pfk_weather_data_day_id": 0,
+        "moonrise_unix": 0,
+        "moonset_unix": 0,
+        "fk_moon_phase_id": 0
+    }
+}

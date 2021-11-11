@@ -4,6 +4,10 @@ const path = require('path');
 const cronjob = require('./backend/generate/objects/cronjob.json');
 const generate = require('./backend/generate/generate');
 const currentAndForecastWeatherData = require('./backend/generate/objects/currentAndForecastWeatherData.json');
+const query = require('./backend/database/query');
+const tables = require('./backend/database/tables.json');
+const { checkObjects } = require('./backend/validation/objects');
+const { UPDATE } = require('./backend/database/query');
 
 async function test() {
   const response = await axios.get(
@@ -74,12 +78,15 @@ async function test5(params) {
   // console.log(currentAndForecastWeatherData.current.dt);
   // console.log(now);
   // console.log(realDt);
-  let date = parseInt(
-    new Date((dt ) * 1000)
-      .toLocaleTimeString()
-      .slice(0, 2)
-  );
+  let date = parseInt(new Date(dt * 1000).toLocaleTimeString().slice(0, 2));
   console.log(date);
 }
 
-test5();
+let astronomy = tables.astronomy;
+let { fk_moon_phase_id, moonrise_unix, moonset_unix } = astronomy;
+fk_moon_phase_id = 2;
+let fields = { fk_moon_phase_id, moonrise_unix, moonset_unix };
+// UPDATE({ astronomy }).SET().WHERE();
+// let o = Object.getOwnPropertyNames(tables.astronomy.moonrise_unix);
+// console.log(o);
+console.log(fk_moon_phase_id);
