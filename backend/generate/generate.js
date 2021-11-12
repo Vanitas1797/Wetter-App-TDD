@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const bindJsons = require('./bindJsons');
 
 function createFile(file) {
   const object = require(`./objects/raw/${file}`);

@@ -1,0 +1,15 @@
+module.exports = {
+  air_pressure: null,
+  felt_temperature: null,
+  fk_sky_state: null,
+  fk_weather_data_day_id: 0,
+  fk_wind_direction: null,
+  hour: 0,
+  humidity: null,
+  pk_weather_data_hour_id: 1,
+  precipitation_probability: null,
+  temperature: null,
+  wind_degree: null,
+  wind_gust: null,
+  wind_speed: null,
+};

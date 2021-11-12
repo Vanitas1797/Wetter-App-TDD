@@ -1,49 +1,134 @@
-const { getKeyNamesOfObject } = require('../help/objects');
-const { checkObjects, checkInnerObject } = require('../validation/objects');
-const tables = require('./tables.json');
+const objectBinds = require('../generate/objectBinds');
+let tables = objectBinds.database.tables;
 
 const query = {
-  queryString: '',
-  UPDATE,
-  DELETE,
-  DROP() {},
-  CREATE() {},
-  INSERT() {},
+  SELECT_FROM: SELECT_FROM,
+  UPDATE_SET: UPDATE_SET,
+  DELETE_FROM: DELETE_FROM,
 };
 
-let currentTable = {};
+const where = {
+  SELECT_FROM: SELECT_FROM,
+};
 
-function UPDATE(table) {
-  let keys = Object.keys(table);
-  if (keys.length > 1) {
-    throw new Error(`Too many tables. Only 1 is allowed`);
-  }
-  if (!tables[keys]) {
-    throw new Error(`Table '${keys[0]}' does not exist`);
-  }
-  currentTable = table;
-  query.queryString = `UPDATE ${tableName}\n`;
-  return { SET };
+let queryString = '';
+
+/**
+ *
+ * @param {tables} table
+ */
+function UPDATE_SET(table) {
+  let tableName = getObjectNames(table);
+  queryString = `UPDATE ${tableName}\n`;
+  SET(table[tableName]);
+  return { queryString, WHERE };
 }
 
-function SET(columnsAndValues) {
-  let wrongFields = checkObjects(currentTable, columnsAndValues);
-  if (wrongFields) {
-    throw new Error(`These Keys are wrong:\n${wrongFields}`);
-  }
-  query.queryString += `SET `;
+function SET(fields) {
+  queryString += `SET `;
   let buildSet = [];
-  for (let columnName in columnsAndValues) {
-    buildSet.push(`${columnName} = ${columnsAndValues[columnName]}`);
+  for (let columnName in fields) {
+    buildSet.push(`${columnName} = ${fields[columnName]}`);
   }
-  query.queryString += buildSet.join(', ') + '\n';
-  return { WHERE };
+  queryString += buildSet.join(', ') + '\n';
 }
 
-function WHERE(columnsAndValues) {}
-
-function DELETE(tableName) {
-  query.queryString = `DELETE FROM ${tableName}\n`;
+/**
+ *
+ * @param {tables} tables
+ */
+function WHERE(tables) {
+  let tableNames = getObjectNames(tables);
+  let fields = tables[tableNames];
+  queryString += 'WHERE ';
+  for (let fieldName of fields) {
+    queryString += `${fieldName} ${fields[fieldName]}`;
+  }
+  return { queryString };
 }
 
-module.exports = query;
+/**
+ *
+ * @param {tables} table
+ */
+function DELETE_FROM(table) {
+  queryString = `DELETE `;
+  let tableNames = getObjectNames(table);
+  FROM(tableNames);
+  return { queryString, WHERE };
+}
+
+/**
+ *
+ * @param {tables} tables
+ */
+function SELECT_FROM(tables) {
+  queryString = `SELECT `;
+  let tableNames = getObjectNames(tables);
+  prepareFields(getFieldNames(tables), tableNames);
+  FROM(tableNames);
+  return { queryString, JOIN, WHERE };
+}
+
+function FROM(tableNames) {
+  queryString += `FROM ${tableNames.join(', ')}`;
+}
+
+function AS(fieldNames) {
+  let fieldNamesWithAs = [];
+  for (let fieldname of fieldNames) {
+    fieldNamesWithAs.push(`${fieldname} AS '${fieldname}'`);
+  }
+  return fieldNamesWithAs;
+}
+
+/**
+ *
+ * @param {tables} params
+ * @returns
+ */
+function JOIN(params) {
+  return { queryString, WHERE };
+}
+
+function modifyFieldNameWithTable(fieldNameArrays, tableNames) {
+  let modifiedFieldNames = [];
+  let i = 0;
+  for (let fieldNames of fieldNameArrays) {
+    for (let fieldName of fieldNames) {
+      modifiedFieldNames.push(`${tableNames[i]}.${fieldName}`);
+    }
+    i++;
+  }
+  return modifiedFieldNames;
+}
+
+function prepareFields(fieldNameArrays, tableNames) {
+  if (fieldNameArrays.length) {
+    let modifiedFieldNames = modifyFieldNameWithTable(
+      fieldNameArrays,
+      tableNames
+    );
+    let fieldNamesWithAs = AS(modifiedFieldNames);
+    queryString += fieldNamesWithAs.join(', ');
+  } else {
+    queryString += '*';
+  }
+  queryString += '\n';
+}
+
+function getObjectNames(object) {
+  let objectNameArrays = Object.keys(object);
+  return objectNameArrays;
+}
+
+function getFieldNames(tables) {
+  let fieldNames = [];
+  for (let tableName in tables) {
+    let fields = tables[tableName];
+    fieldNames.push(getObjectNames(fields));
+  }
+  return fieldNames;
+}
+
+module.exports = { query };

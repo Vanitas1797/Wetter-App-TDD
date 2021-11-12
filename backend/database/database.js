@@ -1,14 +1,18 @@
 const sqlite = require('sqlite3');
 const dbConfig = require('config').get('database');
 const fs = require('fs');
+const objectBinds = require('../generate/objectBinds');
 
 const db = new sqlite.Database(dbConfig.storage);
+
+const tables = objectBinds.database.tables;
+const whereOperators = objectBinds.database.whereOperators;
 
 const queries = {
   getAllFavoritesOfOneUser: fs
     .readFileSync('backend/database/queries/getAllFavoritesOfOneUser.sql')
     .toString(),
-    getAllWeatherDataDay: fs
+  getAllWeatherDataDay: fs
     .readFileSync('backend/database/queries/getAllWeatherDataDay.sql')
     .toString(),
   insertStateCodes: fs
@@ -74,6 +78,10 @@ const queries = {
     .toString(),
 };
 
+const queries2 = {
+  
+};
+
 function all(sql, ...params) {
   return new Promise((resolve, reject) => {
     db.all(sql, ...params, (err, rows) => {
@@ -110,4 +118,4 @@ function get(sql, ...params) {
   });
 }
 
-module.exports = { queries, all, run, get };
+module.exports = { queries, queries2, all, run, get };
