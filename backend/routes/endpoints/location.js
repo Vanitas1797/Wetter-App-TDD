@@ -1,26 +1,43 @@
 const express = require('express');
-const database = require('../database/database');
-const { validateParamsOrQuery } = require('../validation/routes');
+const database = require('../../database/database');
+const { validateParamsOrQuery } = require('../../validation/routes');
 const createHttpError = require('http-errors');
 const { default: axios } = require('axios');
+const location = require('../objects/location');
 const router = express.Router();
 
 const updateApiEveryTenMinutes = 1000 * 60 * 10;
+const requestTemplate = location;
 
 // /location
-router.get('/', getLocationsBySearch);
-router.get('/presentFuture', getLocationsPresentFuture);
-router.get('/past', getLocationsPast);
-
-let currentAndForecastWeatherData = require('../generate/objects/currentAndForecastWeatherData.json');
-let cronjob = require('../generate/objects/cronjob.json');
-const generate = require('../generate/generate');
-const windDirection = require('../database/tables/windDirection');
-const location = require('../database/tables/location');
-const skyState = require('../database/tables/skyState');
-const weatherDataDay = require('../database/tables/weatherDataDay');
-const config = require('../../config/development.json');
-let reverseGeocoding = require('../generate/objects/reverseGeocoding.json');
+router.get('/', async (req, res, next) => {});
+router.get('/:location_id/presentFuture', async (req, res, next) => {
+  let dbParams = getDbParams(requestTemplate.presentFuture.get, req);
+  let rows = await database.all(database.queries.getWeatherDataDay, dbParams);
+  res.json(rows);
+});
+router.get('/:location_id/past', async (req, res, next) => {
+  try {
+    validateRequest()
+    
+  } catch (error) {
+    next(error);
+  }
+});
+/**
+ *
+ * @param {{params,query,body}} template
+ * @param {{params,query,body}} request
+ */
+function getDbParams(template, request) {
+  let dbParams = [];
+  for (let data in template) {
+    for (let key in template[data]) {
+      dbParams.push(request[data][key]);
+    }
+  }
+  return dbParams;
+}
 
 async function getLocationsBySearch(req, res, next) {
   try {
@@ -33,14 +50,15 @@ async function getLocationsBySearch(req, res, next) {
       'longitude',
     ];
     validateParamsOrQuery(shouldParams, req.body);
-    let selectParams = [
-      req.body[shouldParams[0]],
-      req.body[shouldParams[1]],
-      req.body[shouldParams[2]],
-      req.body[shouldParams[3]],
-      req.body[shouldParams[4]],
-      req.body[shouldParams[5]],
-    ];
+    // let selectParams = [
+    //   req.body[shouldParams[0]],
+    //   req.body[shouldParams[1]],
+    //   req.body[shouldParams[2]],
+    //   req.body[shouldParams[3]],
+    //   req.body[shouldParams[4]],
+    //   req.body[shouldParams[5]],
+    // ];
+    let selectParams = Object.values(req.body);
     let rows = await database.all(
       database.queries.getAllLocationsFromUserInput,
       selectParams
@@ -232,6 +250,10 @@ async function getLocationsPresentFuture(req, res, next) {
   }
 }
 
-function getLocationsPast(req, res, next) {}
+function getLocationsPast(req, res, next) {
+  /**
+   *
+   */
+}
 
 module.exports = router;

@@ -2,6 +2,7 @@ const sqlite = require('sqlite3');
 const dbConfig = require('config').get('database');
 const fs = require('fs');
 const objectBinds = require('../generate/objectBinds');
+const createHttpError = require('http-errors');
 
 const db = new sqlite.Database(dbConfig.storage);
 
@@ -76,11 +77,12 @@ const queries = {
   updateWeatherDataHour: fs
     .readFileSync('backend/database/queries/updateWeatherDataHour.sql')
     .toString(),
+  getWeatherDataDayPast: fs
+    .readFileSync('backend/database/queries/getWeatherDataDayPast.sql')
+    .toString(),
 };
 
-const queries2 = {
-  
-};
+const queries2 = {};
 
 function all(sql, ...params) {
   return new Promise((resolve, reject) => {
@@ -88,6 +90,7 @@ function all(sql, ...params) {
       if (err) {
         reject(err);
       } else {
+        if (!rows.length) reject(createHttpError.NotFound());
         resolve(rows);
       }
     });
@@ -112,6 +115,7 @@ function get(sql, ...params) {
       if (err) {
         reject(err);
       } else {
+        if (!row) reject(createHttpError.NotFound());
         resolve(row);
       }
     });

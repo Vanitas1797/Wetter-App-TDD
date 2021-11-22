@@ -1,6 +1,4 @@
 const express = require('express');
-const { db, queries } = require('../database/database');
-const { validateParamsOrQuery } = require('../validation/routes');
 const createHttpError = require('http-errors');
 const router = express.Router();
 
