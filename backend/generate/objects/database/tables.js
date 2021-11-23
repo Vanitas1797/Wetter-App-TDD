@@ -13,6 +13,7 @@ const normalFieldsObject = {
   /**
    *
    * @param {{}} request
+   * @returns {boolean}
    */
   validation: function (request) {},
 };

@@ -20,7 +20,7 @@ router.get('/:location_id/presentFuture', async (req, res, next) => {
 router.get('/:location_id/past', async (req, res, next) => {
   try {
     validation.endpoints.validateRequest({ request: req, check: dataTemplate.past.get.request });
-    res.json()
+    res.json(req.params)
   } catch (error) {
     next(error);
   }
