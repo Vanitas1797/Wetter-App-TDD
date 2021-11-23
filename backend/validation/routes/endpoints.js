@@ -2,12 +2,12 @@ const {
   tables,
   normalFieldsObject,
 } = require('../../generate/objects/database/tables');
-const { buildError, listErrorResultsWithMessage } = require('../error');
+const error = require('../error');
 
 let validateErrors = {
-  syntaxes: { message: '', errors: [] },
-  types: { message: '', errors: [] },
-  values: { message: '', errors: [] },
+  syntax: { message: 'Missing keys', errors: [] },
+  type: { message: 'Wrong value types', errors: [] },
+  value: { message: 'Wrong value validations', errors: [] },
 };
 
 /**
@@ -63,28 +63,20 @@ function iterateObject(data) {
   }
 }
 
-/**
- *
- */
 function prepareErrors() {
+  let err = [];
   for (const key in validateErrors) {
-    buildError(validateErrors[key].errors, validateErrors[key].message);
+    err.push(
+      '\t' +
+        error.buildError(
+          validateErrors[key].errors,
+          validateErrors[key].message
+        )
+    );
   }
-  let errorMessageSyntax = listErrorResultsWithMessage(
-    'Keys are wrong',
-    validateErrors.syntaxes
-  );
-  let errorMessageTypes = listErrorResultsWithMessage(
-    'Value types are wrong',
-    validateErrors.types
-  );
-  let errorMessageValues = listErrorResultsWithMessage(
-    'Value validations are wrong',
-    validateErrors.values
-  );
-  let compareRequestAndCheckMessage = `Wrong object:\n${object}\nRight object:\n${check}`;
-
-  buildError();
+  if (err.length) {
+    throw new Error(err.join('\n'));
+  }
 }
 
 /**
@@ -92,14 +84,14 @@ function prepareErrors() {
  * @param {{request:{},check:{},key:string}} data
  */
 function checkRequestData(data) {
-  if (syntax(data.request[data.key])) {
-    validateErrors.syntaxes.errors.push(key);
+  if (syntax(data)) {
+    validateErrors.syntax.errors.push(data.key);
     return false;
   } else if (type(data)) {
-    validateErrors.types.errors.push(key);
+    validateErrors.type.errors.push(data.key);
     return false;
   } else if (value(data)) {
-    validateErrors.values.errors.push(key);
+    validateErrors.value.errors.push(data.key);
     return false;
   }
   return true;
@@ -107,11 +99,11 @@ function checkRequestData(data) {
 
 /**
  *
- * @param {{}} request
+ * @param {{request:{},check:{},key:string}} data
  * @returns
  */
-function syntax(request) {
-  return !request;
+function syntax(data) {
+  return typeof data.request[data.key] == 'undefined';
 }
 
 /**
@@ -129,7 +121,7 @@ function type(data) {
  * @returns
  */
 function value(requestCheck) {
-  return requestCheck.check.validation(requestCheck.request);
+  return;
 }
 
 module.exports = {

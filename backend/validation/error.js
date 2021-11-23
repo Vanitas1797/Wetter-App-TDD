@@ -14,8 +14,10 @@ module.exports = {
    * @param {string} message
    */
   buildError(errors, message) {
+    let error = '';
     if (errors.length) {
-      this.listErrorResultsWithMessage(message, errors);
+      error += this.listErrorResultsWithMessage(message, errors);
     }
+    return error;
   },
 };

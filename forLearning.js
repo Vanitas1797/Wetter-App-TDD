@@ -2,6 +2,8 @@ const { default: axios } = require('axios');
 const fs = require('fs');
 const { query } = require('./backend/database/query');
 const objectBinds = require('./backend/generate/objectBinds');
+const location = require('./backend/routes/objects/location');
+const { validateRequest } = require('./backend/validation/routes/endpoints');
 
 async function test() {
   const response = await axios.get(
@@ -83,8 +85,13 @@ let whereOperators = objectBinds.database.whereOperators;
 //   user: { pk_user_name: whereOperators.equal + '' },
 // });
 
-query.SELECT_FROM({
-  weather_data_day: { sunset: '', sunrise: '' },
-  weather_data_hour: { air_pressure: '' },
+// query.SELECT_FROM({
+//   weather_data_day: { sunset: '', sunrise: '' },
+//   weather_data_hour: { air_pressure: '' },
+// });
+// query.SELECT_FROM({ weather_data_day: { sunset: '', sunrise: '' } });
+
+validateRequest({
+  request: { body: { city_name: 0 } },
+  check: location['/'].get.request,
 });
-query.SELECT_FROM({ weather_data_day: { sunset: '', sunrise: '' } });

@@ -284,7 +284,7 @@ const tables = {
     const name = this.weather_data_current.name;
     const pk_location_id = this.location().pk_location_id();
     const pk_sky_state_name = this.sky_state().pk_sky_state_name();
-    const pk_wind_direction = this.wind_direction().pk_wind_direction();
+    const pk_wind_direction = this.wind_direction().pk_wind_degree();
     return {
       pk_weather_data_current_id() {
         return getObject({
@@ -388,7 +388,7 @@ const tables = {
     const name = this.weather_data_day.name;
     const pk_location_id = this.location().pk_location_id();
     const pk_sky_state_name = this.sky_state().pk_sky_state_name();
-    const pk_wind_direction = this.wind_direction().pk_wind_direction();
+    const pk_wind_direction = this.wind_direction().pk_wind_degree();
     return {
       pk_weather_data_day_id() {
         return getObject({
@@ -505,7 +505,7 @@ const tables = {
   weather_data_hour() {
     const name = this.weather_data_hour.name;
     const pk_sky_state_name = this.sky_state().pk_sky_state_name();
-    const pk_wind_direction = this.wind_direction().pk_wind_direction();
+    const pk_wind_direction = this.wind_direction().pk_wind_degree();
     const pk_weather_data_day_id =
       this.weather_data_day().pk_weather_data_day_id();
     return {
