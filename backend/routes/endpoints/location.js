@@ -4,22 +4,23 @@ const { validateParamsOrQuery } = require('../../validation/routes');
 const createHttpError = require('http-errors');
 const { default: axios } = require('axios');
 const location = require('../objects/location');
+const validation = require('../../validation/validation');
 const router = express.Router();
 
 const updateApiEveryTenMinutes = 1000 * 60 * 10;
-const requestTemplate = location;
+const dataTemplate = location;
 
 // /location
 router.get('/', async (req, res, next) => {});
 router.get('/:location_id/presentFuture', async (req, res, next) => {
-  let dbParams = getDbParams(requestTemplate.presentFuture.get, req);
+  let dbParams = getDbParams(dataTemplate.presentFuture.get, req);
   let rows = await database.all(database.queries.getWeatherDataDay, dbParams);
   res.json(rows);
 });
 router.get('/:location_id/past', async (req, res, next) => {
   try {
-    validateRequest()
-    
+    validation.endpoints.validateRequest({ request: req, check: dataTemplate.past.get.request });
+    res.json()
   } catch (error) {
     next(error);
   }

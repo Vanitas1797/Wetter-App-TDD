@@ -92,6 +92,6 @@ let whereOperators = objectBinds.database.whereOperators;
 // query.SELECT_FROM({ weather_data_day: { sunset: '', sunrise: '' } });
 
 validateRequest({
-  request: { body: { city_name: 0 } },
-  check: location['/'].get.request,
+  request: { body: { city_name: { tes: 0 } } },
+  check: { body: { city_name: { test: function (s) {} } } },
 });

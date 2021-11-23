@@ -1,7 +1,3 @@
-const {
-  tables,
-  normalFieldsObject,
-} = require('../../generate/objects/database/tables');
 const error = require('../error');
 
 let validateErrors = {
@@ -21,7 +17,7 @@ function iterateRequestData(requestCheck) {
         request: requestCheck.request[key],
         check: requestCheck.check[key],
       };
-      checkRequestDataTypes(data);
+      checkAll(data);
     }
   }
 }
@@ -30,51 +26,49 @@ function iterateRequestData(requestCheck) {
  *
  * @param {{request:{},check:{}}} data
  */
-function checkRequestDataTypes(data) {
+function checkAll(data) {
   for (const key in data.check) {
-    const checkData = { request: data.request, check: data.check, key: key };
-    if (!checkRequestData(checkData)) continue;
-    const nextData = { request: data.request[key], check: data.check[key] };
-    if (Array.isArray(nextData.check)) {
-      iterateArray(nextData);
-    } else if (typeof nextData.check == 'object') {
-      iterateObject(nextData);
+    const checkData = { ...data, key: key };
+    if (!checkSyntax(checkData)) {
+      validateErrors.syntax.errors.push(key);
+      continue;
     }
+    const nextData = {
+      request: data.request[key],
+      check: data.check[key],
+      key: key,
+    };
+    checkTypeAndValidation(nextData);
   }
 }
 
 /**
  *
- * @param {any[]} data
+ * @param {{request:[],check:[],key:string}} data
  */
 function iterateArray(data) {
-  data.forEach((v) => {
-    checkRequestDataTypes(v);
+  data.check.forEach((v, i) => {
+    const nextData = { request: data.request[i], check: v };
+    checkAll(nextData);
   });
-}
-
-/**
- *
- * @param {{}} data
- */
-function iterateObject(data) {
-  for (const key in data) {
-    checkRequestDataTypes(data[key]);
-  }
 }
 
 function prepareErrors() {
   let err = [];
+  let isError = false;
   for (const key in validateErrors) {
-    err.push(
-      '\t' +
-        error.buildError(
-          validateErrors[key].errors,
-          validateErrors[key].message
-        )
-    );
+    if (validateErrors[key].errors.length) {
+      isError = true;
+      err.push(
+        '\t' +
+          error.buildError(
+            validateErrors[key].errors,
+            validateErrors[key].message
+          )
+      );
+    }
   }
-  if (err.length) {
+  if (isError) {
     throw new Error(err.join('\n'));
   }
 }
@@ -82,46 +76,50 @@ function prepareErrors() {
 /**
  *
  * @param {{request:{},check:{},key:string}} data
+ * @returns
  */
-function checkRequestData(data) {
-  if (syntax(data)) {
-    validateErrors.syntax.errors.push(data.key);
-    return false;
-  } else if (type(data)) {
-    validateErrors.type.errors.push(data.key);
-    return false;
-  } else if (value(data)) {
+function checkSyntax(data) {
+  return typeof data.request[data.key] != 'undefined';
+}
+
+/**
+ *
+ * @param {{request:{},check:{},key:string}} data
+ * @returns
+ */
+function checkTypeAndValidation(data) {
+  if (checkType(data)) checkValidation(data);
+}
+
+/**
+ *
+ * @param {{request:{},check:{},key:string}} data
+ * @returns
+ */
+function checkValidation(data) {
+  if (!data.check(data.request)) {
     validateErrors.value.errors.push(data.key);
-    return false;
+  }
+}
+
+/**
+ *
+ * @param {{request:{},check:{},key:string}} data
+ * @returns
+ */
+function checkType(data) {
+  if (Array.isArray(data.check)) {
+    if (!Array.isArray(data.request)) {
+      validateErrors.type.errors.push(data.key);
+    }
+    return iterateArray(data);
+  } else if (typeof data.check == 'object') {
+    if (typeof data.request != 'object') {
+      validateErrors.type.errors.push(data.key);
+    }
+    return checkAll(data);
   }
   return true;
-}
-
-/**
- *
- * @param {{request:{},check:{},key:string}} data
- * @returns
- */
-function syntax(data) {
-  return typeof data.request[data.key] == 'undefined';
-}
-
-/**
- *
- * @param {{request:{},check:{},key:string}} data
- * @returns
- */
-function type(data) {
-  return typeof data.check[data.key] != typeof data.request[data.key];
-}
-
-/**
- *
- * @param {{request:{},check:{},key:string}} requestCheck
- * @returns
- */
-function value(requestCheck) {
-  return;
 }
 
 module.exports = {
