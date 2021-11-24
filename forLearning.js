@@ -1,9 +1,9 @@
 const { default: axios } = require('axios');
 const fs = require('fs');
-const { query } = require('./backend/database/query');
 const objectBinds = require('./backend/generate/objectBinds');
-const location = require('./backend/routes/objects/location');
-const { validateRequest } = require('./backend/validation/routes/endpoints');
+const {
+  getDateFromDateString: fromLocaleStringToDate,
+} = require('./backend/help/time');
 
 async function test() {
   const response = await axios.get(
@@ -78,9 +78,6 @@ async function test5(params) {
   console.log(date);
 }
 
-let tables = objectBinds.database.tables;
-let whereOperators = objectBinds.database.whereOperators;
-
 // query.UPDATE_SET({ user: { password: 'newhahaha' } }).WHERE({
 //   user: { pk_user_name: whereOperators.equal + '' },
 // });
@@ -95,7 +92,9 @@ let whereOperators = objectBinds.database.whereOperators;
 //   request: { body: { city_name: { test: 0 } } },
 //   check: { body: { city_name: { test: function (s) {} } } },
 // });
-validateRequest({
-  request: { body: { test: 0 } },
-  check: { body: { test: { saasd: 0 } } },
-});
+// validateRequest({
+//   request: { body: { test: 0 } },
+//   check: { body: { test: { saasd: 0 } } },
+// });
+let now = new Date();
+console.log(new Date(now.setMinutes(25)));

@@ -12,8 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/user', require('./routes/endpoints/user'));
-app.use('/location', require('./routes/endpoints/location'));
+app.use('/user', require('./routes/user/user'));
+app.use('/location', require('./routes/location/location'));
 
 fs.copyFileSync(
   `backend/database/db/wetter-app-copy.db`,

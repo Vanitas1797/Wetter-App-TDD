@@ -51,4 +51,6 @@ async function getLocationId(latitude, longitude) {
   }
 }
 
-module.exports = { getLocationId };
+module.exports = {
+  
+};

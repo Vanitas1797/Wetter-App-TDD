@@ -4,4 +4,5 @@ module.exports = {
   lat: 34.0901,
   lon: -118.4065,
   country: 'US',
+  state: '',
 };

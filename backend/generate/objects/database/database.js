@@ -383,6 +383,13 @@ const tables = {
           json: 'weather_report',
         });
       },
+      last_updated_date_time() {
+        return getObject({
+          table: name,
+          type: new String(),
+          json: 'last_updated_date_time',
+        });
+      },
     };
   },
   weather_data_day() {
@@ -503,14 +510,14 @@ const tables = {
       },
     };
   },
-  weather_data_hour() {
-    const name = this.weather_data_hour.name;
+  weather_data_time() {
+    const name = this.weather_data_time.name;
     const pk_sky_state_name = this.sky_state().pk_sky_state_name();
     const pk_wind_direction = this.wind_direction().pk_wind_degree();
     const pk_weather_data_day_id =
       this.weather_data_day().pk_weather_data_day_id();
     return {
-      pk_weather_data_hour_id() {
+      pk_weather_data_time_id() {
         return getObject({
           table: name,
           type: new Number(),

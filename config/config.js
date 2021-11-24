@@ -14,8 +14,8 @@ const api = {
             coordinatesByZipOrPostCode(zipCode, countryCode) {
               return `http://api.openweathermap.org/geo/1.0/zip?zip=${zipCode},${countryCode}&appid=${api.openWeatherApi.url.urlParams.apiKey}`;
             },
-            coordinatesByLocationName(cityName, stateCode, countryName) {
-              return `http://api.openweathermap.org/geo/1.0/direct?q=${cityName},${stateCode},${countryName}&limit=${api.openWeatherApi.url.urlParams.limit}&appid=${api.openWeatherApi.url.urlParams.apiKey}`;
+            coordinatesByLocationName(cityName, stateCode, countryCode) {
+              return `http://api.openweathermap.org/geo/1.0/direct?q=${cityName},${stateCode},${countryCode}&limit=${api.openWeatherApi.url.urlParams.limit}&appid=${api.openWeatherApi.url.urlParams.apiKey}`;
             },
           },
           reverseGeocoding: {
@@ -38,6 +38,9 @@ const api = {
             minutes: 10,
           },
         },
+      },
+      forecast: {
+        days: 7,
       },
     },
   },

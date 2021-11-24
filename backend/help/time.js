@@ -1,46 +1,32 @@
+const { getLocaleTimeInMilliseconds } = require('../api/openWeather');
+
 module.exports = {
-  /**
-   *
-   * @param {{ms,s,mi,h,d,w,mo,y}} time
-   * @returns
-   */
-  days(time) {
-    return this.hours(time) / 24;
+  getDateFromDateString(dateString) {
+    let dateStringArray = dateString.split(', ');
+
+    let date = dateStringArray[0].split('.');
+    let time = dateStringArray[1].split(':');
+
+    let newDate = `${date[2]}-${date[1]}-${date[0]}T${time[0]}:${time[1]}:${time[2]}.000Z`;
+
+    return newDate;
   },
-  /**
-   *
-   * @param {{ms,s,mi,h,d,w,mo,y}} time
-   * @returns
-   */
-  hours(time) {
-    return this.minutes(time) / 60;
-  },
-  /**
-   *
-   * @param {{ms,s,mi,h,d,w,mo,y}} time
-   * @returns
-   */
-  minutes(time) {
-    return this.seconds(time) / 60;
-  },
-  /**
-   *
-   * @param {{ms,s,mi,h,d,w,mo,y}} time
-   * @returns
-   */
-  seconds(time) {
-    return time / 1000;
+  getDateStringFromSeconds(time, timezoneOffset) {
+    let localTime = getLocaleTimeInMilliseconds(time, timezoneOffset);
+
+    let dateString = new Date(localTime).toString();
+
+    let dateTimeArray = dateString.split('T');
+
+    let dateArray = dateTimeArray[0].split('-');
+    let timeArray = dateTimeArray[1].split(':');
+    timeArray[2] = timeArray[2].slice(0, 2);
+
+    let newDateString = `${dateArray[2]}.${dateArray[1]}.${dateArray[0]}, ${timeArray[0]}:${timeArray[1]}:${timeArray[2]}`;
+
+    return newDateString;
   },
 };
 
-/**
- *
- * @param {{ms,s,mi,h,d,w,mo,y}} time
- * @returns
- */
-function sumOfAll(time) {
-  let sum = 0;
-  Object.values(time).forEach((v) => (sum += v));
-}
-
-sumOfAll({ d: 365 });
+// 24.11.2021, 18:48:42
+// new Date() = 2021-11-24T17:48:42.435Z

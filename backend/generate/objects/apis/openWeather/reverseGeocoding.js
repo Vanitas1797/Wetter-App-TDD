@@ -32,6 +32,7 @@ module.exports = [
     lat: 51.5128,
     lon: -0.0918,
     country: 'GB',
+    state: '',
   },
   {
     name: 'London',

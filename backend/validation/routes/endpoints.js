@@ -1,6 +1,6 @@
 const {
   normalFieldsObject,
-} = require('../../generate/objects/database/tables');
+} = require('../../generate/objects/database/database');
 const error = require('../error');
 
 let validateErrors = {
@@ -94,7 +94,7 @@ function checkSyntax(data, key) {
  * @returns
  */
 function validateValue(data) {
-  if (!data.check(data.request)) {
+  if (data.check(data.request) == false) {
     validateErrors.value.errors.push(data.key);
     return false;
   }
@@ -107,8 +107,11 @@ function validateValue(data) {
  */
 function hasType(data) {
   if (!isArray(data)) {
-    isObject(data);
+    if (!isObject(data)) {
+      return false;
+    }
   }
+  return true;
 }
 
 /**
@@ -117,7 +120,7 @@ function hasType(data) {
  */
 function isArray(data) {
   if (Array.isArray(data.check) && Array.isArray(data.request)) {
-    iterateArray(data)
+    iterateArray(data);
     return true;
   }
   if (!Array.isArray(data.check) && !Array.isArray(data.request)) {
@@ -133,7 +136,7 @@ function isArray(data) {
  */
 function isObject(data) {
   if (typeof data.check == 'object' && typeof data.request == 'object') {
-    iterateObject(data)
+    iterateObject(data);
     return true;
   }
   if (typeof data.check != 'object' && typeof data.request != 'object') {
@@ -149,7 +152,24 @@ module.exports = {
    * @param {{request:{params:{},query:{},body:{}},check:{params:{},query:{},body:{}}}} requestCheck
    */
   validateRequest(requestCheck) {
-    iterateObject(requestCheck);
+    if (requestCheck.check.params)
+      iterateObject({
+        ...requestCheck,
+        request: requestCheck.request.params,
+        check: requestCheck.check.params,
+      });
+    if (requestCheck.check.query)
+      iterateObject({
+        ...requestCheck,
+        request: requestCheck.request.query,
+        check: requestCheck.check.query,
+      });
+    if (requestCheck.check.body)
+      iterateObject({
+        ...requestCheck,
+        request: requestCheck.request.body,
+        check: requestCheck.check.body,
+      });
     prepareErrors();
   },
 };

@@ -1,5 +1,5 @@
-const objectBinds = require('../generate/objectBinds');
-let tables = objectBinds.database.tables;
+const database = require('../generate/objects/database/database');
+const { tables } = require('../generate/objects/database/database');
 
 const query = {
   SELECT_FROM: SELECT_FROM,
@@ -131,4 +131,83 @@ function getFieldNames(tables) {
   return fieldNames;
 }
 
-module.exports = { query };
+// const functionParams = {
+//   select:
+//     {select:string[][]|'*',from:function[],join:{table:function,on:{left:string,right:string}}[],where},
+// };
+const arrays = {
+  selectArray: [],
+  fromTables: [],
+  joinTables: [],
+  whereArray: [],
+};
+
+module.exports = {
+  /**
+   *
+   * @param {{select:string[][]|'*',from:function[],join:{table:function,on:{left:string,right:string}}[],where:{op:database['operators']['logicalOperators'],query:{field:function,op:database['operators']['comparisonOperators']}}[]}} query
+   */
+  select(query) {
+    let string = `SELECT ${
+      query.select == '*' ? '*' : select(query)
+    }\nFROM ${from(query.from)}${query.join ? `\n${join(query.join)}` : ''}${
+      query.where ? `\nWHERE ${where(query)}` : ''
+    }`;
+  },
+};
+
+/**
+ *
+ * @param {{select:string[][]|'*',from:function[],join:{table:function,on:{left:string,right:string}}[],where:{op:database['operators']['logicalOperators'],query:{field:function,op:database['operators']['comparisonOperators']}}[]}} whereQuery
+ */
+function where(whereQuery) {
+  whereQuery.where.map((v) => {
+    return `"${arrays.fromTables.includes()}"."${v.query.field.name}"`;
+  });
+}
+
+/**
+ *
+ * @param {function[]} fromQuery
+ */
+function from(fromQuery) {
+  return fromQuery
+    .map((v) => {
+      const table = `"${v.name}"`;
+      arrays.fromTables.push(table);
+      return table;
+    })
+    .join(', ');
+}
+
+/**
+ *
+ * @param {{table:function,on:{left:string,right:string}}[]} joinQuery
+ */
+function join(joinQuery) {
+  return joinQuery
+    .map((v) => {
+      arrays.joinTables.push(v.table.name);
+      return `JOIN "${v.table.name}" ON "${v.on.left}" = "${v.on.right}"`;
+    })
+    .join('\n');
+}
+
+/**
+ *
+ * @param {{select:string[][],from:function[],join:{table:function,on:{left:string,right:string}},where}} selectQuery
+ */
+function select(selectQuery) {
+  let selects = [];
+  selectQuery.select.forEach((v, i) => {
+    v.forEach((v2) => {
+      let table = selectQuery.from[i];
+      if (!selectQuery.from[i]) {
+        i = 0;
+        table = selectQuery.join[i];
+      }
+      selects.push(`"${table}"."${v2}"`);
+    });
+  });
+  return selects.join(', ');
+}

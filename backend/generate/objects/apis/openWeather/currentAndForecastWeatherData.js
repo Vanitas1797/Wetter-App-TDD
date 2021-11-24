@@ -17,6 +17,7 @@ module.exports = {
     visibility: 10000,
     wind_speed: 6,
     wind_deg: 300,
+    wind_gust: 7.33,
     weather: [
       {
         id: 500,
@@ -87,6 +88,7 @@ module.exports = {
       dew_point: 276.77,
       wind_speed: 3.06,
       wind_deg: 294,
+      wind_gust: 7.33,
       weather: [
         {
           id: 500,
