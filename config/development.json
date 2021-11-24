@@ -4,7 +4,14 @@
         "username": "KHVanitas",
         "password": "db-p4ss",
         "dialect": "sqlite",
-        "storage": "./wetter-app-dev.db",
+        "storage": "./backend/database/db/wetter-app-dev.db",
         "logging": false
+    },
+    "weatherApi": {
+        "apiKey": "cea910880ce57c3997f3b4e5e34f25fe",
+        "limit": 50,
+        "exclude": "minutely",
+        "units": "metric",
+        "lang": "de"
     }
 }

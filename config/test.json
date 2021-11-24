@@ -4,7 +4,7 @@
         "username": "KHVanitas",
         "password": "db-p4ss",
         "dialect": "sqlite",
-        "storage": "./wetter-app-test.db",
+        "storage": "./backend/database/db/wetter-app-test.db",
         "logging": false
     }
 }
