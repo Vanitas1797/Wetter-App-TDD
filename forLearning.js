@@ -97,4 +97,4 @@ async function test5(params) {
 //   check: { body: { test: { saasd: 0 } } },
 // });
 let now = new Date();
-console.log(new Date(now.setMinutes(25)));
+console.log(new Date().getHours());

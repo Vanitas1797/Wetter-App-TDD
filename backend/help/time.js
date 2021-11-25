@@ -11,22 +11,48 @@ module.exports = {
 
     return newDate;
   },
+  getDateTimeStringFromSeconds(time, timezoneOffset) {
+    return (
+      this.getDateFromDateString() + ', ' + this.getTimeStringFromSeconds()
+    );
+  },
   getDateStringFromSeconds(time, timezoneOffset) {
     let localTime = getLocaleTimeInMilliseconds(time, timezoneOffset);
 
-    let dateString = new Date(localTime).toString();
+    let date = new Date(localTime);
 
-    let dateTimeArray = dateString.split('T');
+    let day = extendNumberWithZero(date.getUTCDate());
+    let month = extendNumberWithZero(date.getUTCMonth() + 1);
+    let year = date.getUTCFullYear();
 
-    let dateArray = dateTimeArray[0].split('-');
-    let timeArray = dateTimeArray[1].split(':');
-    timeArray[2] = timeArray[2].slice(0, 2);
-
-    let newDateString = `${dateArray[2]}.${dateArray[1]}.${dateArray[0]}, ${timeArray[0]}:${timeArray[1]}:${timeArray[2]}`;
+    let newDateString = `${day}.${month}.${year}`;
 
     return newDateString;
   },
+  getTimeStringFromSeconds(time, timezoneOffset) {
+    let localTime = getLocaleTimeInMilliseconds(time, timezoneOffset);
+
+    let date = new Date(localTime);
+
+    let hour = extendNumberWithZero(date.getUTCHours());
+    let minute = extendNumberWithZero(date.getUTCMinutes());
+    let second = extendNumberWithZero(date.getUTCSeconds());
+
+    let newTimeString = `${hour}:${minute}:${second}`;
+
+    return newTimeString;
+  },
 };
+
+/**
+ *
+ * @param {number} params
+ * @returns
+ */
+function extendNumberWithZero(params) {
+  if (params.toString().length == 1) return '0' + params.toString();
+  return params;
+}
 
 // 24.11.2021, 18:48:42
 // new Date() = 2021-11-24T17:48:42.435Z

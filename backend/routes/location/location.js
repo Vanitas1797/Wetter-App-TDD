@@ -19,7 +19,7 @@ const reverseGeocoding = require('../../generate/objects/apis/openWeather/revers
 const { state_code } = require('../../database/tables/state_code');
 const { country_code } = require('../../database/tables/country_code');
 const last_updated_date_time = require('../../database/tables/last_updated_date_time');
-const { getDateStringFromSeconds } = require('../../help/time');
+const { getDateTimeStringFromSeconds: getDateStringFromSeconds } = require('../../help/time');
 const router = express.Router();
 
 const apiUrls = config.backend.api.openWeatherApi.url.urls;
