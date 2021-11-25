@@ -46,9 +46,21 @@ const api = {
   },
 };
 
+const time = {
+  timezoneOffsetSeconds() {
+    return {
+      de: 1 * this.timezoneOffsetSecondsFactor,
+    };
+  },
+  timezoneOffsetSecondsFactor: {
+    de: 3600,
+  },
+};
+
 module.exports = {
   backend: {
     api,
+    time,
   },
   frontend: {},
 };

@@ -245,7 +245,7 @@ beforeAll(() => {
   //   }
   // });
   fs.copyFileSync(
-    `backend/database/db/wetter-app-copy.db`,
+    `backend/database/db/wetter-app-test-copy.db`,
     `backend/database/db/wetter-app-test.db`
   );
 });

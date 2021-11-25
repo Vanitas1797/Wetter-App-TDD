@@ -1,10 +1,3 @@
-/**
- * TODO
- * -----------------------------------------------------------------------------------------
- * felder können gleich heißen, aber in unterschiedlichen tabellen unterschiedliche konfigurationen haben
- * --> einzigartiges feldersystem wieder auflösen und ausschließlich von der tabelle ableiten lassen
- */
-
 const normalFieldsObject = {
   table: '',
   type: '',

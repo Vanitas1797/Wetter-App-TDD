@@ -1,9 +1,6 @@
 const { default: axios } = require('axios');
 const fs = require('fs');
-const objectBinds = require('./backend/generate/objectBinds');
-const {
-  getDateFromDateString: fromLocaleStringToDate,
-} = require('./backend/help/time');
+const { getDateString } = require('./backend/help/time');
 
 async function test() {
   const response = await axios.get(
@@ -96,5 +93,3 @@ async function test5(params) {
 //   request: { body: { test: 0 } },
 //   check: { body: { test: { saasd: 0 } } },
 // });
-let now = new Date();
-console.log(new Date().getHours());

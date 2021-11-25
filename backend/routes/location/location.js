@@ -1,43 +1,346 @@
 const express = require('express');
 const config = require('../../../config/config');
 const database = require('../../database/database');
-const { date } = require('../../database/(dep)tables/date');
-const { time } = require('../../database/(dep)tables/time');
-const { sunrise } = require('../../database/(dep)tables/sunrise');
-const { sunset } = require('../../database/(dep)tables/sunset');
 const windDirection = require('../../database/(dep)tables/windDirection');
-const currentAndForecastWeatherData = require('../../objects/apis/openWeather/currentAndForecastWeatherData');
 const validation = require('../../validation/validation');
 const object = require('./object');
-const {
-  getDataFromApi,
-  getLocaleTimeInMilliseconds: getLocaleTime,
-} = require('../../api/openWeather');
-const coordinatesByZipOrPostCode = require('../../objects/apis/openWeather/coordinatesByZipOrPostCode');
-const coordinatesByLocationName = require('../../objects/apis/openWeather/coordinatesByLocationName');
-const reverseGeocoding = require('../../objects/apis/openWeather/reverseGeocoding');
+const { getDataFromApi } = require('../../api/openWeather');
 const { state_code } = require('../../database/(dep)tables/state_code');
 const { country_code } = require('../../database/(dep)tables/country_code');
-const last_updated_date_time = require('../../database/(dep)tables/last_updated_date_time');
-const { getDateTimeStringFromSeconds: getDateStringFromSeconds } = require('../../help/time');
+const {
+  getDateString,
+  getDate,
+  getDateTimeString,
+  getTimeString,
+} = require('../../help/time');
+const openWeather = require('../../api/openWeather');
+const openWeatherResponses = require('../../objects/apis/openWeather/responses');
 const router = express.Router();
 
+const currentAndForecastWeatherData =
+  openWeatherResponses.oneCall.currentAndForecastWeatherData;
+const reverseGeocoding = openWeatherResponses.geocoding.reverseGeocoding;
+const coordinatesByZipOrPostCode =
+  openWeatherResponses.geocoding.coordinatesByZipOrPostCode;
+const coordinatesByLocationName =
+  openWeatherResponses.geocoding.coordinatesByLocationName;
 const apiUrls = config.backend.api.openWeatherApi.url.urls;
+const time = config.backend.time;
 const openWeatherApi = config.backend.api.openWeatherApi;
 const updateApiEveryTenMinutes = 1000 * 60 * 10;
 const dataTemplate = object;
+const nowUnix = new Date().getTime();
+const timezoneDE = time.timezoneOffsetSeconds().de;
+const today = getDateString(nowUnix, timezoneDE);
 
 async function getWeatherDataDaysForecast(paramsDay) {
   let rowsDay;
   let now = new Date();
   for (let i = 0; i < openWeatherApi.execution.forecast.days; i++) {
     rowsDay = await database.all(database.queries.getWeatherDataDay, paramsDay);
-    let day = new Date(now.setDate(now.getDate() + 1)).toLocaleDateString();
+    let day = getDateString(
+      new Date(now.setDate(now.getDate() + 1)).getTime(),
+      time.timezoneOffsetSeconds().de
+    );
     paramsDay[1] = day;
   }
-  paramsDay[1] = new Date().toLocaleDateString();
+  paramsDay[1] = getDateString(new Date().getTime());
 
   return rowsDay;
+}
+
+/**
+ *
+ * @param {currentAndForecastWeatherData} data
+ */
+async function insertRowCurrent(data) {
+  let current = data.current;
+  let insertCurrent = [
+    data.locationId,
+    getDateString(current.dt, data.timezone_offset),
+    current.temp,
+    current.weather[0].description,
+    current.wind_speed,
+    current.wind_gust,
+    current.wind_deg,
+    await windDirection.wind_direction(current.wind_deg),
+    current.humidity,
+    current.pressure,
+    getTimeString(current.sunrise, data.timezone_offset),
+    getTimeString(current.sunset, data.timezone_offset),
+    null,
+    getDateTimeString(current.dt, data.timezone_offset),
+  ];
+  await database.run(database.queries.insertWeatherDataCurrent, insertCurrent);
+}
+
+/**
+ *
+ * @param {currentAndForecastWeatherData} data
+ */
+async function insertRowsDay(data) {
+  let daily = data.daily;
+  for (const day of daily) {
+    let insertDaily = [
+      data.locationId,
+      getDateString(day.dt, data.timezone_offset),
+      day.temp.max,
+      day.temp.min,
+      day.weather[0].description,
+      day.wind_speed,
+      day.wind_gust,
+      day.wind_deg,
+      await windDirection.wind_direction(day.wind_deg),
+      day.pop,
+      day.humidity,
+      day.pressure,
+      getTimeString(day.sunrise, data.timezone_offset),
+      getTimeString(day.sunset, data.timezone_offset),
+      null,
+    ];
+    await database.run(database.queries.insertWeatherDataDay, insertDaily);
+  }
+}
+
+/**
+ *
+ * @param {currentAndForecastWeatherData} data
+ * @param {{}[]} rowsDay
+ */
+async function insertRowsTime(data, rowsDay) {
+  let hourly = data.hourly;
+  for (const hour of hourly) {
+    let insertHourly = [
+      rowsDay[0].pk_weather_data_day_id,
+      getTimeString(hour.dt, data.timezone_offset),
+      hour.temp,
+      hour.feels_like,
+      hour.weather[0].description,
+      hour.wind_speed,
+      hour.wind_gust,
+      hour.wind_deg,
+      await windDirection.wind_direction(hour.wind_deg),
+      hour.pop,
+      hour.humidity,
+      hour.pressure,
+    ];
+    await database.run(database.queries.insertWeatherDataTime, insertHourly);
+  }
+}
+
+/**
+ *
+ * @param {currentAndForecastWeatherData} data
+ */
+async function updateRowCurrent(data) {
+  let updateCurrent = [getDateTimeString(nowUnix, timezoneDE), data.locationId];
+  await database.run(database.queries.updateWeatherDataCurrent, updateCurrent);
+}
+
+/**
+ *
+ * @param {currentAndForecastWeatherData} data
+ */
+async function updateRowsDay(data) {
+  let daily = data.daily;
+  for (const day of daily) {
+    let updateDaily = [
+      day.temp.max,
+      day.temp.min,
+      day.weather[0].description,
+      day.wind_speed,
+      day.wind_gust,
+      day.wind_deg,
+      await windDirection.wind_direction(day.wind_deg),
+      day.pop,
+      day.humidity,
+      day.pressure,
+      getTimeString(day.sunrise, data.timezone_offset),
+      getTimeString(day.sunset, data.timezone_offset),
+      null,
+      data.locationId,
+    ];
+    await database.run(database.queries.updateWeatherDataDay, updateDaily);
+  }
+}
+
+/**
+ *
+ * @param {currentAndForecastWeatherData} data
+ * @param {{}[]} rowsDay
+ */
+async function updateRowsTime(data, rowsDay) {
+  let hourly = data.hourly;
+  for (const hour of hourly) {
+    let updateHourly = [
+      hour.temp,
+      hour.feels_like,
+      hour.weather[0].description,
+      hour.wind_speed,
+      hour.wind_gust,
+      hour.wind_deg,
+      await windDirection.wind_direction(hour.wind_deg),
+      hour.pop,
+      hour.humidity,
+      hour.pressure,
+      rowsDay[0].pk_weather_data_day_id,
+    ];
+    await database.run(database.queries.updateWeatherDataTime, updateHourly);
+  }
+}
+
+async function getRowCurrent(data, paramsCurrent, isUpdated) {
+  let rowCurrent = await database.get(
+    database.queries.getWeatherDataCurrent,
+    paramsCurrent
+  );
+
+  return rowCurrent;
+}
+
+async function getRowsDay(data, paramsDay) {
+  let rowsDay = await getWeatherDataDaysForecast(paramsDay);
+  if (!rowsDay.length) {
+    await insertRowsDay(data);
+    rowsDay = await getWeatherDataDaysForecast(paramsDay);
+  }
+  return rowsDay;
+}
+
+async function getRowsTime(data, paramsDay) {
+  const rowsDay = await getRowsDay(paramsDay);
+  let paramsTime = [rowsDay[0].pk_weather_data_day_id];
+  let rowsTime = await database.all(
+    database.queries.getWeatherDataTime,
+    paramsTime
+  );
+  if (!rowsTime.length) {
+    await insertRowsTime(data, rowsDay);
+    rowsTime = await database.all(
+      database.queries.getWeatherDataTime,
+      paramsTime
+    );
+  }
+  return rowsTime;
+}
+
+async function apiCallCurrentAndForecastWeatherData(reqParamLocationId) {
+  let rowLocation = await database.get(
+    database.queries.getLocation,
+    reqParamLocationId
+  );
+  let url = apiUrls.oneCall.currentAndForecastWeatherData(
+    rowLocation.latitude,
+    rowLocation.longitude
+  );
+  let apiResponse = await getDataFromApi(url);
+  let data = currentAndForecastWeatherData;
+  data = apiResponse.data;
+  data.locationId = reqParamLocationId;
+  return data;
+}
+
+async function apiCallCoordinatesByZipOrPostCode(requestBody) {
+  let url = apiUrls.geocoding.directGeocoding.coordinatesByZipOrPostCode(
+    requestBody.zip_code,
+    requestBody.country_name
+  );
+  let apiResponse = await getDataFromApi(url);
+  let data = coordinatesByZipOrPostCode;
+  data = apiResponse.data;
+  return data;
+}
+
+async function apiCallCoordinatesByLocationName(requestBody) {
+  let url = apiUrls.geocoding.directGeocoding.coordinatesByLocationName(
+    requestBody.city_name,
+    requestBody.state_name,
+    requestBody.country_name
+  );
+  let apiResponse = await getDataFromApi(url);
+  let data = coordinatesByLocationName;
+  data = apiResponse.data;
+  return data;
+}
+
+async function apiCallReverseGeocoding(requestBody) {
+  let url = apiUrls.geocoding.reverseGeocoding.reverseGeocoding(
+    requestBody.latitude,
+    requestBody.longitude
+  );
+  let apiResponse = await getDataFromApi(url);
+  let data = reverseGeocoding;
+  data = apiResponse.data;
+  return data;
+}
+
+async function insertRowLocation(insert) {
+  await database.run(database.queries.insertLocation, insert);
+}
+
+async function insertByCoordinatesByZipOrPostCode(requestBody) {
+  let data = await apiCallCoordinatesByZipOrPostCode(requestBody);
+  let insert = [
+    data.name,
+    await state_code(data.state),
+    await country_code(data.country),
+    data.zip,
+    data.lat,
+    data.lon,
+  ];
+  await insertRowLocation(insert);
+}
+
+async function insertByCoordinatesByLocationName(requestBody) {
+  let data = await apiCallCoordinatesByLocationName(requestBody);
+  for (const d of data) {
+    let insert = [
+      d.local_names.de || d.local_names.en || d.name,
+      await state_code(d.state),
+      await country_code(d.country),
+      null,
+      d.lat,
+      d.lon,
+    ];
+    await insertRowLocation(insert);
+  }
+}
+
+async function insertByReverseGeocoding(requestBody) {
+  let data = await apiCallReverseGeocoding(requestBody);
+  for (const d of data) {
+    let insert = [
+      d.local_names.de || d.local_names.en || d.name,
+      await state_code(d.state),
+      await country_code(d.country),
+      null,
+      d.lat,
+      d.lon,
+    ];
+    await insertRowLocation(insert);
+  }
+}
+
+async function getRowsLocationsFromUserInput(params) {
+  let rows = await database.all(
+    database.queries.getAllLocationsFromUserInput,
+    params
+  );
+  return rows;
+}
+
+async function chooseInsert(rowsLocation, requestBody) {
+  if (requestBody.zip_code && requestBody.country_name) {
+    await insertByCoordinatesByZipOrPostCode(requestBody);
+  } else if (
+    requestBody.city_name ||
+    requestBody.state_name ||
+    requestBody.country_name
+  ) {
+    await insertByCoordinatesByLocationName(requestBody);
+  } else if (requestBody.latitude && requestBody.longitude) {
+    await insertByReverseGeocoding(requestBody);
+  }
 }
 
 // /location
@@ -59,88 +362,16 @@ router.get('/', async (req, res, next) => {
     requestBody = req.body;
 
     let params = Object.values(requestBody);
-    let rows = await database.all(
-      database.queries.getAllLocationsFromUserInput,
-      params
-    );
 
-    if (!rows.length) {
-      if (requestBody.zip_code && requestBody.country_name) {
-        let url = apiUrls.geocoding.directGeocoding.coordinatesByZipOrPostCode(
-          requestBody.zip_code,
-          requestBody.country_name
-        );
+    let rowsLocation = await getRowsLocationsFromUserInput(params);
 
-        let apiResponse = await getDataFromApi(url);
-        let data = coordinatesByZipOrPostCode;
-        data = apiResponse.data;
-
-        let insert = [
-          data.name,
-          await state_code(data.state),
-          await country_code(data.country),
-          data.zip,
-          data.lat,
-          data.lon,
-        ];
-        await database.run(database.queries.insertLocation, insert);
-      } else if (
-        requestBody.city_name ||
-        requestBody.state_name ||
-        requestBody.country_name
-      ) {
-        let url = apiUrls.geocoding.directGeocoding.coordinatesByLocationName(
-          requestBody.city_name,
-          requestBody.state_name,
-          requestBody.country_name
-        );
-        let apiResponse = await getDataFromApi(url);
-        let data = coordinatesByLocationName;
-        data = apiResponse.data;
-
-        for (const d of data) {
-          let insert = [
-            d.local_names.de || d.local_names.en || d.name,
-            await state_code(d.state),
-            await country_code(d.country),
-            null,
-            d.lat,
-            d.lon,
-          ];
-
-          await database.run(database.queries.insertLocation, insert);
-        }
-      } else if (requestBody.latitude && requestBody.longitude) {
-        let url = apiUrls.geocoding.reverseGeocoding.reverseGeocoding(
-          requestBody.latitude,
-          requestBody.longitude
-        );
-        let apiResponse = await getDataFromApi(url);
-        let data = reverseGeocoding;
-        data = apiResponse.data;
-
-        for (const d of data) {
-          let insert = [
-            d.local_names.de || d.name,
-            await state_code(d.state),
-            await country_code(d.country),
-            null,
-            d.lat,
-            d.lon,
-          ];
-
-          await database.run(database.queries.insertLocation, insert);
-        }
-      }
+    if (!rowsLocation.length) {
+      await chooseInsert(rowsLocation, requestBody);
+      rowsLocation = await getRowsLocationsFromUserInput(params);
     }
 
-    rows = await database.all(
-      database.queries.getAllLocationsFromUserInput,
-      params
-    );
-
     const builtResponse = {
-      rows: rows,
+      rows: rowsLocation,
     };
 
     res.json(builtResponse);
@@ -148,6 +379,7 @@ router.get('/', async (req, res, next) => {
     next(error);
   }
 });
+// todo: refaktorisieren, sodass api call nur wenn nötig aufgerufen wird
 router.get('/:location_id/presentFuture', async (req, res, next) => {
   try {
     validation.endpoints.validateRequest({
@@ -155,183 +387,32 @@ router.get('/:location_id/presentFuture', async (req, res, next) => {
       check: dataTemplate.presentFuture.get.request,
     });
 
-    const now = new Date();
-    // todo
-    let today = now.toLocaleDateString();
+    const reqParamLocationId = req.params.location_id;
 
-    let paramsCurrent = [req.params.location_id];
-    let paramsDay = [req.params.location_id, today];
+    let paramsCurrent = [reqParamLocationId];
+    let paramsDay = [reqParamLocationId, today];
 
-    let rowsCurrent = await database.all(
-      database.queries.getWeatherDataCurrent,
-      paramsCurrent
-    );
-    let rowsDay = await getWeatherDataDaysForecast(paramsDay);
+    const isUpdated = await openWeather.isUpdated(reqParamLocationId);
 
-    let paramsTime = [];
+    const rowCurrent = await getRowCurrent(data, paramsCurrent, isUpdated);
+    const rowsDay = await getRowsDay(data, paramsDay);
+    const rowsTime = await getRowsTime(data, paramsDay);
 
-    const isUpdated = await last_updated_date_time.isUpdated(
-      req.params.location_id
-    );
-
-    let row = await database.get_throws(
-      database.queries.getLocation,
-      req.params.location_id
-    );
-    let url = apiUrls.oneCall.currentAndForecastWeatherData(
-      row.latitude,
-      row.longitude
-    );
-    let apiResponse = await getDataFromApi(url);
-    let data = currentAndForecastWeatherData;
-    data = apiResponse.data;
-
-    if (!rowsCurrent.length) {
-      let current = data.current;
-      let insertCurrent = [
-        req.params.location_id,
-        getDateStringFromSeconds(current.dt, data.timezone_offset),
-        current.temp,
-        current.weather[0].description,
-        current.wind_speed,
-        current.wind_gust,
-        current.wind_deg,
-        await windDirection.wind_direction(current.wind_deg),
-        current.humidity,
-        current.pressure,
-        getDateStringFromSeconds(current.sunrise, data.timezone_offset),
-        getDateStringFromSeconds(current.sunset, data.timezone_offset),
-        null,
-        getDateStringFromSeconds(current.dt, data.timezone_offset),
-      ];
-      await database.run(
-        database.queries.insertWeatherDataCurrent,
-        insertCurrent
-      );
+    if (!rowCurrent.length) {
+      let data = await apiCallCurrentAndForecastWeatherData(reqParamLocationId);
+      await insertRowCurrent(data);
+      rowCurrent = await getRowCurrent(paramsCurrent)
+    } else if (!isUpdated) {
+      let data = await apiCallCurrentAndForecastWeatherData(reqParamLocationId);
+      await updateRowCurrent(data);
+      await updateRowsDay(data);
+      await updateRowsTime(data);
     }
-
-    if (!rowsDay.length) {
-      let daily = data.daily;
-      for (const day of daily) {
-        let insertDaily = [
-          req.params.location_id,
-          getDateStringFromSeconds(day.dt, data.timezone_offset),
-          day.temp.max,
-          day.temp.min,
-          day.weather[0].description,
-          day.wind_speed,
-          day.wind_gust,
-          day.wind_deg,
-          await windDirection.wind_direction(day.wind_deg),
-          day.pop,
-          day.humidity,
-          day.pressure,
-          getDateStringFromSeconds(day.sunrise, data.timezone_offset),
-          getDateStringFromSeconds(day.sunset, data.timezone_offset),
-          null,
-        ];
-        await database.run(database.queries.insertWeatherDataDay, insertDaily);
-      }
-
-      rowsDay = await getWeatherDataDaysForecast(paramsDay);
-    }
-
-    paramsTime = [rowsDay[0].pk_weather_data_day_id];
-    let rowsTime = await database.all(
-      database.queries.getWeatherDataTime,
-      paramsTime
-    );
-
-    if (!rowsTime.length) {
-      let hourly = data.hourly;
-      for (const hour of hourly) {
-        let insertHourly = [
-          rowsDay[0].pk_weather_data_day_id,
-          getDateStringFromSeconds(hour.dt, data.timezone_offset),
-          hour.temp,
-          hour.feels_like,
-          hour.weather[0].description,
-          hour.wind_speed,
-          hour.wind_gust,
-          hour.wind_deg,
-          await windDirection.wind_direction(hour.wind_deg),
-          hour.pop,
-          hour.humidity,
-          hour.pressure,
-        ];
-        await database.run(
-          database.queries.insertWeatherDataTime,
-          insertHourly
-        );
-      }
-    }
-
-    if (!isUpdated) {
-      let updateCurrent = [
-        getDateStringFromSeconds(now, 3600),
-        req.params.location_id,
-      ];
-      await database.run(
-        database.queries.updateWeatherDataCurrent,
-        updateCurrent
-      );
-
-      let daily = data.daily;
-      for (const day of daily) {
-        let updateDaily = [
-          day.temp.max,
-          day.temp.min,
-          day.weather[0].description,
-          day.wind_speed,
-          day.wind_gust,
-          day.wind_deg,
-          await windDirection.wind_direction(day.wind_deg),
-          day.pop,
-          day.humidity,
-          day.pressure,
-          getDateStringFromSeconds(day.sunrise, data.timezone_offset),
-          getDateStringFromSeconds(day.sunset, data.timezone_offset),
-          null,
-          req.params.location_id,
-        ];
-        await database.run(database.queries.updateWeatherDataDay, updateDaily);
-      }
-      rowsDay = await getWeatherDataDaysForecast(paramsDay);
-
-      let hourly = data.hourly;
-      for (const hour of hourly) {
-        let updateHourly = [
-          hour.temp,
-          hour.feels_like,
-          hour.weather[0].description,
-          hour.wind_speed,
-          hour.wind_gust,
-          hour.wind_deg,
-          await windDirection.wind_direction(hour.wind_deg),
-          hour.pop,
-          hour.humidity,
-          hour.pressure,
-          rowsDay[0].pk_weather_data_day_id,
-        ];
-        await database.run(
-          database.queries.updateWeatherDataTime,
-          updateHourly
-        );
-      }
-      rowsTime = await database.all(
-        database.queries.getWeatherDataTime,
-        paramsTime
-      );
-    }
-
-    rowsCurrent = await database.all(
-      database.queries.getWeatherDataCurrent,
-      paramsCurrent
-    );
 
     const builtResponse = {
+      current_locale_time: getTimeString(nowUnix, data.timezone_offset),
       rows: {
-        current: rowsCurrent,
+        current: rowCurrent,
         day: rowsDay,
         hour: rowsTime,
       },
@@ -351,7 +432,7 @@ router.get('/:location_id/past', async (req, res, next) => {
 
     const params = [req.params.location_id, req.body.date];
 
-    let row = await database.get(
+    let row = await database.get_throws(
       database.queries.getWeatherDataDayPast,
       params
     );
@@ -363,6 +444,7 @@ router.get('/:location_id/past', async (req, res, next) => {
     next(error);
   }
 });
+
 /**
  *
  * @param {{params,query,body}} template

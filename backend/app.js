@@ -16,7 +16,7 @@ app.use('/user', require('./routes/user/user'));
 app.use('/location', require('./routes/location/location'));
 
 fs.copyFileSync(
-  `backend/database/db/wetter-app-copy.db`,
+  `backend/database/db/wetter-app-dev-copy.db`,
   `backend/database/db/wetter-app-dev.db`
 );
 

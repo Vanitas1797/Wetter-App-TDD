@@ -44,9 +44,13 @@ function iterateObject(data) {
     if (!checkSyntax(data, key)) {
       continue;
     }
+    let dataCheckKey = data.check[key];
+    if (typeof dataCheckKey == 'function') {
+      dataCheckKey = dataCheckKey();
+    }
     const nextData = {
       request: data.request[key],
-      check: data.check[key],
+      check: dataCheckKey,
       key: key,
     };
     checkAll(nextData);
