@@ -1,7 +1,5 @@
-const {
-  normalFieldsObject,
-} = require('../../generate/objects/database/database');
-const error = require('../error');
+const { normalFieldsObject } = require('../../objects/database/tables');
+const error = require('../../errorHandling');
 
 let validateErrors = {
   syntax: { message: 'Missing keys', errors: [] },

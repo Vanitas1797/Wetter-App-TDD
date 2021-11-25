@@ -1,24 +1,24 @@
 const express = require('express');
 const config = require('../../../config/config');
 const database = require('../../database/database');
-const { date } = require('../../database/tables/date');
-const { time } = require('../../database/tables/time');
-const { sunrise } = require('../../database/tables/sunrise');
-const { sunset } = require('../../database/tables/sunset');
-const windDirection = require('../../database/tables/windDirection');
-const currentAndForecastWeatherData = require('../../generate/objects/apis/openWeather/currentAndForecastWeatherData');
+const { date } = require('../../database/(dep)tables/date');
+const { time } = require('../../database/(dep)tables/time');
+const { sunrise } = require('../../database/(dep)tables/sunrise');
+const { sunset } = require('../../database/(dep)tables/sunset');
+const windDirection = require('../../database/(dep)tables/windDirection');
+const currentAndForecastWeatherData = require('../../objects/apis/openWeather/currentAndForecastWeatherData');
 const validation = require('../../validation/validation');
 const object = require('./object');
 const {
   getDataFromApi,
   getLocaleTimeInMilliseconds: getLocaleTime,
 } = require('../../api/openWeather');
-const coordinatesByZipOrPostCode = require('../../generate/objects/apis/openWeather/coordinatesByZipOrPostCode');
-const coordinatesByLocationName = require('../../generate/objects/apis/openWeather/coordinatesByLocationName');
-const reverseGeocoding = require('../../generate/objects/apis/openWeather/reverseGeocoding');
-const { state_code } = require('../../database/tables/state_code');
-const { country_code } = require('../../database/tables/country_code');
-const last_updated_date_time = require('../../database/tables/last_updated_date_time');
+const coordinatesByZipOrPostCode = require('../../objects/apis/openWeather/coordinatesByZipOrPostCode');
+const coordinatesByLocationName = require('../../objects/apis/openWeather/coordinatesByLocationName');
+const reverseGeocoding = require('../../objects/apis/openWeather/reverseGeocoding');
+const { state_code } = require('../../database/(dep)tables/state_code');
+const { country_code } = require('../../database/(dep)tables/country_code');
+const last_updated_date_time = require('../../database/(dep)tables/last_updated_date_time');
 const { getDateTimeStringFromSeconds: getDateStringFromSeconds } = require('../../help/time');
 const router = express.Router();
 
@@ -156,6 +156,7 @@ router.get('/:location_id/presentFuture', async (req, res, next) => {
     });
 
     const now = new Date();
+    // todo
     let today = now.toLocaleDateString();
 
     let paramsCurrent = [req.params.location_id];

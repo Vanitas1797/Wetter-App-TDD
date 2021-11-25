@@ -9,7 +9,7 @@ module.exports = {
     const res = await axios.get(url);
     return res;
   },
-  getLocaleTimeInMilliseconds(time, timezoneOffset) {
-    return (time + timezoneOffset) * 1000;
+  getLocaleTimeInMilliseconds(seconds, timezoneOffsetSeconds) {
+    return (seconds + timezoneOffsetSeconds) * 1000;
   },
 };

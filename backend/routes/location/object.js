@@ -1,4 +1,4 @@
-const { tables } = require('../../generate/objects/database/database');
+const { tables } = require('../../objects/database/tables');
 
 module.exports = {
   '/': {
