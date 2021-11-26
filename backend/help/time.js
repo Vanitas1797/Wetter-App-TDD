@@ -1,4 +1,4 @@
-const { getLocaleTime: getLocaleTime } = require('../api/openWeather');
+const openWeather = require('../api/openWeather');
 
 module.exports = {
   /**
@@ -6,7 +6,7 @@ module.exports = {
    * @param {string} dateTimeString
    * @returns
    */
-  getDate(dateTimeString) {
+  getDate(dateTimeString, timezoneOffsetSeconds) {
     let dateStringArray = dateTimeString.split(', ');
     let date = dateTimeString.split('.');
     let time = dateTimeString.split(':');
@@ -24,7 +24,9 @@ module.exports = {
     if (!time.length) {
       newDate = `${date[2]}-${date[1]}-${date[0]}T00:00:00.000Z`;
     } else {
-      newDate = `${date[2]}-${date[1]}-${date[0]}T${time[0]}:${time[1]}:${time[2]}.000Z`;
+      newDate = `${date[2]}-${date[1]}-${date[0]}T${
+        time[0] - timezoneOffsetSeconds / 3600
+      }:${time[1]}:${time[2]}.000Z`;
     }
 
     return new Date(newDate);
@@ -34,62 +36,73 @@ module.exports = {
    * @param {number} unix
    * @param {number} timezoneOffsetSeconds
    * @returns
-   */ getDateTimeString(unix, timezoneOffsetSeconds) {
+   */
+  getDateTimeString(unix, timezoneOffsetSeconds) {
     return (
-      this.getDateString(unix, timezoneOffsetSeconds) +
+      getDateString(unix, timezoneOffsetSeconds) +
       ', ' +
-      this.getTimeString(unix, timezoneOffsetSeconds)
+      getTimeString(unix, timezoneOffsetSeconds)
     );
   },
-  /**
-   *
-   * @param {number} unix
-   * @param {number} timezoneOffsetSeconds
-   * @returns
-   */ getTimeString(unix, timezoneOffsetSeconds) {
-    let date = getLocalDate(unix, timezoneOffsetSeconds);
-
-    let hour = extendNumberWithZero(date.getUTCHours());
-    let minute = extendNumberWithZero(date.getUTCMinutes());
-    let second = extendNumberWithZero(date.getUTCSeconds());
-
-    let newTimeString = `${hour}:${minute}:${second}`;
-
-    return newTimeString;
-  },
-  /**
-   *
-   * @param {number} unix
-   * @param {number} timezoneOffsetSeconds
-   * @returns
-   */
-  getDateString(unix, timezoneOffsetSeconds) {
-    let date = getLocalDate(unix, timezoneOffsetSeconds);
-
-    let day = extendNumberWithZero(date.getUTCDate());
-    let month = extendNumberWithZero(date.getUTCMonth() + 1);
-    let year = date.getUTCFullYear();
-
-    let newDateString = `${day}.${month}.${year}`;
-
-    return newDateString;
-  },
+  getTimeString,
+  getDateString,
 };
 
 /**
  *
  * @param {number} unix
- * @param {*} timezoneOffsetSeconds
+ * @param {number} timezoneOffsetSeconds
+ * @returns
+ */
+function getTimeString(unix, timezoneOffsetSeconds) {
+  let date = getLocalDate(unix, timezoneOffsetSeconds);
+
+  let hour = extendNumberWithZero(date.getUTCHours());
+  let minute = extendNumberWithZero(date.getUTCMinutes());
+  let second = extendNumberWithZero(date.getUTCSeconds());
+
+  let newTimeString = `${hour}:${minute}:${second}`;
+
+  return newTimeString;
+}
+
+/**
+ *
+ * @param {number} unix
+ * @param {number} timezoneOffsetSeconds
+ * @returns
+ */
+function getDateString(unix, timezoneOffsetSeconds) {
+  let date = getLocalDate(unix, timezoneOffsetSeconds);
+
+  let day = extendNumberWithZero(date.getUTCDate());
+  let month = extendNumberWithZero(date.getUTCMonth() + 1);
+  let year = date.getUTCFullYear();
+
+  let newDateString = `${day}.${month}.${year}`;
+
+  return newDateString;
+}
+
+/**
+ *
+ * @param {number} unix
+ * @param {number} timezoneOffsetSeconds
  * @returns
  */
 function getLocalDate(unix, timezoneOffsetSeconds) {
   unix = getUnixInMilliseconds(unix);
 
+  timezoneOffsetSeconds = timezoneOffsetSeconds || 0;
   let localTime = getLocaleTime(unix, timezoneOffsetSeconds);
 
   let date = new Date(localTime);
 
   return date;
+}
+
+function getLocaleTime(unix, timezoneOffsetSeconds) {
+  return (unix / 1000 + timezoneOffsetSeconds) * 1000;
 }
 
 /**
@@ -105,6 +118,7 @@ function extendNumberWithZero(params) {
 /**
  *
  * @param {number} unix
+ * @returns
  */
 function getUnixInMilliseconds(unix) {
   let nowUnixLength = new Date().getTime().toString().length;

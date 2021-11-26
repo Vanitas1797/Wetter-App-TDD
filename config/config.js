@@ -49,7 +49,7 @@ const api = {
 const time = {
   timezoneOffsetSeconds() {
     return {
-      de: 1 * this.timezoneOffsetSecondsFactor,
+      de: 1 * this.timezoneOffsetSecondsFactor.de,
     };
   },
   timezoneOffsetSecondsFactor: {

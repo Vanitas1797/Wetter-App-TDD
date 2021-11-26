@@ -151,6 +151,13 @@ const tables = {
           json: 'longitude',
         });
       },
+      timezone_offset() {
+        return getObject({
+          table: name,
+          type: new Number(),
+          json: 'timezone_offset',
+        });
+      },
     };
   },
   moon_phase() {
