@@ -1,3 +1,6 @@
+// todo: errors: queries:
+  // SQLITE_ERROR: no such column: temperature
+  // getWeatherDataDaysForecast() fehlerhaft datumausgabe
 const express = require('express');
 const config = require('../../../config/config');
 const database = require('../../database/database');
