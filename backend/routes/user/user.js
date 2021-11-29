@@ -1,14 +1,186 @@
 const express = require('express');
 const createHttpError = require('http-errors');
+const database = require('../../database/database');
+const { initRouter } = require('../../help/routes');
+const routes = require('../../help/routes');
+const validation = require('../../validation/validation');
+const object = require('./object');
+const user = require('../../validation/routes/user');
+const bcrypt = require('../../help/bcrypt');
 const router = express.Router();
 
 // /user
-router.get('/:username/favorites', getAllFavoritesOfOneUser);
-router.put('/:username/resetPassword', putResetPassword);
-router.delete('/:username/account', deleteAccount);
-router.post('/register', postRegister);
-router.get('/forgotPassword', getForgotPassword);
-router.put('/:username/forgotPassword', putForgotPassword);
+router.get('/:user_id/favorites', async (req, res, next) => {
+  try {
+    validation.endpoints.validateRequest_throws({
+      request: req,
+      check: object.favorites.get.request,
+    });
+
+    let rowsFavorites = await database.all_throws404(
+      database.queries2.getSavedLocationsByUserId,
+      req.params.user_id
+    );
+
+    const builtResponse = {
+      rows: rowsFavorites,
+    };
+
+    res.json(builtResponse);
+  } catch (error) {
+    next(error);
+  }
+});
+router.post('/:user_id/favorites', async (req, res, next) => {
+  routes.initRouter({
+    next: next,
+    request: { req: req, check: object.favorites.post.request },
+    response: res,
+    exe: async () => {
+      let body = object.favorites.post.request.body;
+      body = req.body;
+
+      await database.get_throws404(database.queries2.getLocation, [
+        body.location_id,
+      ]);
+
+      await database.run_throws400(queries.favorites.saveFavorite, [
+        req.params.user_id,
+        body.location_id,
+      ]);
+
+      return object.favorites.post.response;
+    },
+  });
+});
+router.put('/:user_id/resetPassword', async (req, res, next) => {
+  initRouter({
+    next: next,
+    request: { req: req, check: object.resetPassword.put.request },
+    response: res,
+    async exe() {
+      let body = object.resetPassword.put.request.body;
+      body = req.body;
+
+      user.resetPassword(body);
+      user.createPassword(body.new_password);
+
+      await database.run_throws400(database.queries2.saveChangedPassword, [
+        bcrypt.encryptPassword(body.new_password),
+        req.params.user_id,
+      ]);
+
+      return object.resetPassword.put.response;
+    },
+  });
+});
+router.delete('/:user_id/account', async (req, res, next) => {
+  initRouter({
+    next: next,
+    request: { req: req, check: object.account.delete.request },
+    response: res,
+    exe: async () => {
+      let body = object.account.delete.request.body;
+      body = req.body;
+
+      let row = database.queries2.getUser.from;
+      row = await database.get_throws404(database.queries2.getUser.query, [
+        req.params.user_id,
+      ]);
+
+      user.deleteAccount({
+        realPassword: body.password,
+        password: row.password,
+      });
+
+      await database.run_throws400(database.queries2.deleteUser, [
+        req.params.user_id,
+      ]);
+
+      return object.account.delete.response;
+    },
+  });
+});
+router.post('/register', async (req, res, next) => {
+  initRouter({
+    next: next,
+    response: res,
+    request: { req: req, check: object.register.post.request },
+    exe: async () => {
+      let body = object.register.post.request.body;
+      body = req.body;
+
+      await database.run_throws400(database.queries2.registerUser, [
+        body.email,
+        body.password,
+      ]);
+
+      return object.register.post.response;
+    },
+  });
+});
+router.get('/forgotPassword', async (req, res, next) => {
+  initRouter({
+    next: next,
+    response: res,
+    request: {
+      req: req,
+      check: object.forgotPassword.get.request,
+    },
+    exe: async () => {
+      let body = object.forgotPassword.get.request.body;
+      body = req.body;
+
+      let row = database.queries2.getUserByEmail.from;
+      row = await database.get_throws404(
+        database.queries2.getUserByEmail.query,
+        [body.email]
+      );
+
+      if (!row) {
+        throw createHttpError.BadRequest('Email is wrong');
+      }
+
+      return;
+    },
+  });
+});
+router.get('/login', async (req, res, next) => {
+  initRouter({
+    next: next,
+    response: res,
+    request: {
+      req: req,
+      check: object.login.get.request,
+    },
+    exe: async () => {
+      let body = object.login.get.request.body;
+      body = req.body;
+
+      let row = database.queries2.getUserByEmail.from;
+      row = await database.get(database.queries2.getUserByEmail, [body.email]);
+
+      if (!row) {
+        throw createHttpError.BadRequest('Email or password are wrong');
+      }
+
+      const isPassword = bcrypt.decryptPassword({
+        check: body.password,
+        encrypted: row.password,
+      });
+
+      if (!isPassword) {
+        throw createHttpError.BadRequest('Email or password are wrong');
+      }
+
+      let sess = req.session;
+      sess.user_id = row.pk_user_id;
+
+      return;
+    },
+  });
+});
+router.put('/logout', putForgotPassword);
 
 function getAllFavoritesOfOneUser(req, res, next) {
   const params = [req.params.username];

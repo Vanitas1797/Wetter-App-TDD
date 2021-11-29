@@ -2,12 +2,21 @@ const express = require('express');
 const path = require('path');
 const logger = require('morgan');
 const fs = require('fs');
+const session = require('express-session');
 
 const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    secret: 'ksadkjdsakdashk&$/&%/$tgaszgzs7&&75687329462',
+    saveUninitialized: false,
+    resave: false,
+  })
+);
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static(path.join(__dirname, 'public')));

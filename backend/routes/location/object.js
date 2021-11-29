@@ -1,4 +1,5 @@
 const { tables } = require('../../objects/database/tables');
+const location = require('../../validation/routes/location');
 
 module.exports = {
   '/': {
@@ -25,6 +26,7 @@ module.exports = {
           [tables.location().longitude().json]: tables.location().longitude()
             .validation,
         },
+        validation: {},
       },
       response: {
         body: {
@@ -64,9 +66,12 @@ module.exports = {
             .pk_location_id().validation,
         },
         body: {
-          [tables.weather_data_day().date().json]: tables
-            .weather_data_day()
-            .date().validation,
+          date_in_past: { date: '', timezone: '' },
+        },
+        validation: {
+          body: {
+            date_in_past: location.dateInPast,
+          },
         },
       },
       response: {
@@ -83,9 +88,9 @@ module.exports = {
             .weather_data_day()
             .min_temperature().validation,
 
-          [tables.weather_data_day().fk_sky_state_name().json]: tables
+          [tables.weather_data_day().sky_state_name().json]: tables
             .weather_data_day()
-            .fk_sky_state_name().validation,
+            .sky_state_name().validation,
 
           [tables.weather_data_day().wind_speed().json]: tables
             .weather_data_day()
@@ -138,6 +143,7 @@ module.exports = {
             .location()
             .pk_location_id().validation,
         },
+        validation: {},
       },
       response: {
         body: {
@@ -150,9 +156,9 @@ module.exports = {
               .weather_data_current()
               .temperature().validation,
 
-            [tables.weather_data_current().fk_sky_state_name().json]: tables
+            [tables.weather_data_current().sky_state_name().json]: tables
               .weather_data_current()
-              .fk_sky_state_name().validation,
+              .sky_state_name().validation,
 
             [tables.weather_data_current().wind_speed().json]: tables
               .weather_data_current()
@@ -203,9 +209,9 @@ module.exports = {
               .weather_data_day()
               .min_temperature().validation,
 
-            [tables.weather_data_day().fk_sky_state_name().json]: tables
+            [tables.weather_data_day().sky_state_name().json]: tables
               .weather_data_day()
-              .fk_sky_state_name().validation,
+              .sky_state_name().validation,
 
             [tables.weather_data_day().wind_speed().json]: tables
               .weather_data_day()
@@ -260,9 +266,9 @@ module.exports = {
               .weather_data_time()
               .felt_temperature().validation,
 
-            [tables.weather_data_time().fk_sky_state_name().json]: tables
+            [tables.weather_data_time().sky_state_name().json]: tables
               .weather_data_time()
-              .fk_sky_state_name().validation,
+              .sky_state_name().validation,
 
             [tables.weather_data_time().wind_speed().json]: tables
               .weather_data_time()

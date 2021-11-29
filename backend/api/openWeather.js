@@ -18,14 +18,14 @@ module.exports = {
     return res;
   },
   async isUpdated(locationId) {
-    let row = await database.get_throws(
+    let row = await database.get_throws404(
       database.queries.getWeatherDataCurrent,
       locationId
     );
 
     let now = new Date().getTime();
     let ludt = getDate(row.last_updated_date_time, timezoneDE);
-    ludt = new Date(ludt.setSeconds(ludt.getSeconds() + 1)).getTime();
+    ludt = new Date(ludt.setMinutes(ludt.getMinutes() + minutes)).getTime();
     if (ludt <= now) {
       return false;
     }

@@ -1,9 +1,8 @@
-const openWeather = require('../api/openWeather');
-
 module.exports = {
   /**
    *
    * @param {string} dateTimeString
+   * @param {number} timezoneOffsetSeconds
    * @returns
    */
   getDate(dateTimeString, timezoneOffsetSeconds) {
@@ -16,12 +15,12 @@ module.exports = {
       throw new Error('There must be a date');
     }
 
-    if (dateStringArray.length) {
+    if (dateStringArray.length > 1) {
       date = dateStringArray[0].split('.');
       time = dateStringArray[1].split(':');
     }
 
-    if (!time.length) {
+    if (time.length <= 1) {
       newDate = `${date[2]}-${date[1]}-${date[0]}T00:00:00.000Z`;
     } else {
       newDate = `${date[2]}-${date[1]}-${date[0]}T${

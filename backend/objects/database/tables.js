@@ -189,7 +189,7 @@ const tables = {
   },
   saved_location() {
     const name = this.saved_location.name;
-    const pk_user_name = this.user().pk_user_name();
+    const pk_user_id = this.user().pk_user_id();
     const pk_location_id = this.location().pk_location_id();
     return {
       pk_saved_location_id() {
@@ -200,29 +200,16 @@ const tables = {
           constraints: [cf.primary_key, cf.autoincrement],
         });
       },
-      fk_user_name() {
+      fk_user_id() {
         return getObject({
           table: name,
-          reference: pk_user_name,
+          reference: pk_user_id,
         });
       },
       fk_location_id() {
         return getObject({
           table: name,
           reference: pk_location_id,
-        });
-      },
-    };
-  },
-  sky_state() {
-    const name = this.sky_state.name;
-    return {
-      pk_sky_state_name() {
-        return getObject({
-          table: name,
-          type: new String(),
-          json: 'sky_state_name',
-          constraints: [cf.primary_key],
         });
       },
     };
@@ -257,12 +244,12 @@ const tables = {
   user() {
     const name = this.user.name;
     return {
-      pk_user_name() {
+      pk_user_id() {
         return getObject({
           table: name,
-          type: new String(),
-          json: 'user_name',
-          constraints: [cf.primary_key],
+          type: new Number(),
+          json: 'user_id',
+          constraints: [cf.primary_key, cf.autoincrement],
         });
       },
       email_address() {
@@ -284,7 +271,6 @@ const tables = {
   weather_data_current() {
     const name = this.weather_data_current.name;
     const pk_location_id = this.location().pk_location_id();
-    const pk_sky_state_name = this.sky_state().pk_sky_state_name();
     const pk_wind_direction = this.wind_direction().pk_wind_degree();
     return {
       pk_weather_data_current_id() {
@@ -315,10 +301,11 @@ const tables = {
           json: 'temperature',
         });
       },
-      fk_sky_state_name() {
+      sky_state_name() {
         return getObject({
           table: name,
-          reference: pk_sky_state_name,
+          type: new String(),
+          json: 'sky_state_name',
         });
       },
       wind_speed() {
@@ -395,7 +382,6 @@ const tables = {
   weather_data_day() {
     const name = this.weather_data_day.name;
     const pk_location_id = this.location().pk_location_id();
-    const pk_sky_state_name = this.sky_state().pk_sky_state_name();
     const pk_wind_direction = this.wind_direction().pk_wind_degree();
     return {
       pk_weather_data_day_id() {
@@ -433,10 +419,11 @@ const tables = {
           json: 'min_temperature',
         });
       },
-      fk_sky_state_name() {
+      sky_state_name() {
         return getObject({
           table: name,
-          reference: pk_sky_state_name,
+          type: new String(),
+          json: 'sky_state_name',
         });
       },
       wind_speed() {
@@ -512,7 +499,6 @@ const tables = {
   },
   weather_data_time() {
     const name = this.weather_data_time.name;
-    const pk_sky_state_name = this.sky_state().pk_sky_state_name();
     const pk_wind_direction = this.wind_direction().pk_wind_degree();
     const pk_weather_data_day_id =
       this.weather_data_day().pk_weather_data_day_id();
@@ -552,10 +538,11 @@ const tables = {
           json: 'felt_temperature',
         });
       },
-      fk_sky_state_name() {
+      sky_state_name() {
         return getObject({
           table: name,
-          reference: pk_sky_state_name,
+          type: new String(),
+          json: 'sky_state_name',
         });
       },
       wind_speed() {
