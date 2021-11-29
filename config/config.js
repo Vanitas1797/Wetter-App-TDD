@@ -46,6 +46,10 @@ const api = {
   },
 };
 
+const secrets = {
+  login_system: 'ksadkjdsakdashk&$/&%/$tgaszgzs7&&75687329462',
+};
+
 const time = {
   timezoneOffsetSeconds() {
     return {
@@ -61,6 +65,7 @@ module.exports = {
   backend: {
     api,
     time,
+    secrets,
   },
   frontend: {},
 };

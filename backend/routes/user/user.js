@@ -112,7 +112,7 @@ router.post('/register', async (req, res, next) => {
 
       await database.run_throws400(database.queries2.registerUser, [
         body.email,
-        body.password,
+        await bcrypt.encryptPassword(body.password),
       ]);
 
       return object.register.post.response;
@@ -158,13 +158,15 @@ router.get('/login', async (req, res, next) => {
       body = req.body;
 
       let row = database.queries2.getUserByEmail.from;
-      row = await database.get(database.queries2.getUserByEmail, [body.email]);
+      row = await database.get(database.queries2.getUserByEmail.query, [
+        body.email,
+      ]);
 
       if (!row) {
         throw createHttpError.BadRequest('Email or password are wrong');
       }
 
-      const isPassword = bcrypt.decryptPassword({
+      const isPassword = await bcrypt.decryptPassword({
         check: body.password,
         encrypted: row.password,
       });
@@ -176,11 +178,28 @@ router.get('/login', async (req, res, next) => {
       let sess = req.session;
       sess.user_id = row.pk_user_id;
 
-      return;
+      return object.login.get.response;
     },
   });
 });
-router.put('/logout', putForgotPassword);
+router.get('/logout', async (req, res, next) => {
+  initRouter({
+    next: next,
+    response: res,
+    request: { req: req, check: object.logout.get.request },
+    exe: async () => {
+      let sess = req.session;
+      
+      sess.destroy((err) => {
+        if (err) {
+          throw new Error(err);
+        }
+      });
+
+      return object.logout.get.response;
+    },
+  });
+});
 
 function getAllFavoritesOfOneUser(req, res, next) {
   const params = [req.params.username];

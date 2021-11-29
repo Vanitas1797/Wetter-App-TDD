@@ -1,4 +1,71 @@
+const units = { ms: 0, s: 0, mi: 0, h: 0, d: 0, w: 0, mo: 0, y: 0 };
+
 module.exports = {
+  /**
+   *
+   * @param {units} units
+   * @returns
+   */
+  toMilliseconds(units) {
+    return this.toSeconds(units) * 1000;
+  },
+  /**
+   *
+   * @param {units} units
+   * @returns
+   */
+  toSeconds(units) {
+    return this.toMinutes(units) * 60;
+  },
+  /**
+   *
+   * @param {units} units
+   * @returns
+   */
+  toMinutes(units) {
+    return this.toHours(units) * 60;
+  },
+  /**
+   *
+   * @param {units} units
+   * @returns
+   */
+  toHours(units) {
+    return this.toDays(units) * 24;
+  },
+  /**
+   *
+   * @param {units} units
+   * @returns
+   */
+  toDays(units) {
+    let days = getDaysFromUnits(units);
+    return days;
+  },
+  /**
+   *
+   * @param {units} units
+   * @returns
+   */
+  toWeeks(units) {
+    return this.toDays(units) / 7;
+  },
+  /**
+   *
+   * @param {units} units
+   * @returns
+   */
+  toMonths(units) {
+    return this.toYears(units) * 12;
+  },
+  /**
+   *
+   * @param {units} units
+   * @returns
+   */
+  toYears(units) {
+    return this.toSeconds(units) / 31556926;
+  },
   /**
    *
    * @param {string} dateTimeString
@@ -46,6 +113,33 @@ module.exports = {
   getTimeString,
   getDateString,
 };
+
+/**
+ *
+ * @param {units} units
+ */
+function getDaysFromUnits(units) {
+  let ms = (u) => s(u) / 1000;
+  let s = (u) => mi(u) / 60;
+  let mi = (u) => h(u) / 60;
+  let h = (u) => u / 24;
+  let d = (u) => u;
+  let w = (u) => u * 7;
+  let mo = (u) => y(u) / 12;
+  let y = (u) => s(u) * 31556926;
+
+  return (
+    ms(units.ms) ||
+    0 + s(units.s) ||
+    0 + mi(units.mi) ||
+    0 + h(units.h) ||
+    0 + d(units.d) ||
+    0 + w(units.w) ||
+    0 + mo(units.mo) ||
+    0 + y(units.y) ||
+    0
+  );
+}
 
 /**
  *

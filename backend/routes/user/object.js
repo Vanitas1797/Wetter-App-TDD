@@ -92,7 +92,18 @@ module.exports = {
         },
         validation: {},
       },
-      response: {},
+      response: { message: 'User has logged in' },
+    },
+  },
+  logout: {
+    get: {
+      request: {
+        params: {},
+        query: {},
+        body: {},
+        validation: {},
+      },
+      response: { message: 'User has logged out' },
     },
   },
 };

@@ -3,6 +3,8 @@ const path = require('path');
 const logger = require('morgan');
 const fs = require('fs');
 const session = require('express-session');
+const time = require('./help/time');
+const config = require('../config/config');
 
 const app = express();
 
@@ -12,9 +14,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   session({
-    secret: 'ksadkjdsakdashk&$/&%/$tgaszgzs7&&75687329462',
+    secret: config.backend.secrets.login_system,
     saveUninitialized: false,
     resave: false,
+    cookie: { maxAge: time.toMilliseconds({ mi: 5 }) },
   })
 );
 
