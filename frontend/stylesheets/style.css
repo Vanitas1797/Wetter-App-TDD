@@ -24,17 +24,31 @@ body {
   text-decoration: none;
 }
 .search_location {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  font-size: 24px;
+  width: 986px;
+  margin: auto;
 }
 .search_location input {
   margin-top: 71px;
-  width: 986px;
-  height: 46px;
-  font-size: 24px;
-  padding: 0 10px;
+  height: 50px;
+  width: 100%;
+  padding: 10px;
+  font-size: inherit;
 }
 .search_location input:focus::placeholder {
   color: transparent;
+}
+.search_location_suggestions {
+  width: 984px;
+  border-style: solid;
+  border-width: 1px;
+  overflow: auto;
+  max-height: 200px;
+}
+.search_location_suggestions option {
+  padding: 10px;
+}
+.search_location_suggestions option:hover {
+  background-color: orange;
+  color: white;
 }
