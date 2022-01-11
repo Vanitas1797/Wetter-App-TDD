@@ -77,6 +77,7 @@ module.exports = {
     let date = dateTimeString.split('.');
     let time = dateTimeString.split(':');
     let newDate = '';
+    timezoneOffsetSeconds = timezoneOffsetSeconds || 0;
 
     if (!date.length) {
       throw new Error('There must be a date');

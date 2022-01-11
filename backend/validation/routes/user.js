@@ -38,7 +38,7 @@ module.exports = {
           minLength +
           ' and ' +
           maxLength +
-          ' and at least 1 special and 1 common characters'
+          ' and at least 1 special, 1 number and 1 common characters'
       );
     }
   },

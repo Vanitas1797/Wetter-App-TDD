@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  font-family: 'Microsoft Yahei';
+  color: black;
+}
+.top_page_frame {
+  background-color: orange;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+  padding: 0 60px;
+}
+.top_page_frame h1 {
+  text-decoration: underline;
+  font-size: 48px;
+}
+.top_page_frame a {
+  font-size: 26px;
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+}
+.search_location {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.search_location input {
+  margin-top: 71px;
+  width: 986px;
+  height: 46px;
+  font-size: 24px;
+  padding: 0 10px;
+}
+.search_location input:focus::placeholder {
+  color: transparent;
+}

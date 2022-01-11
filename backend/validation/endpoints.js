@@ -116,17 +116,16 @@ function iterateObject(data) {
   let i = 0;
   let requestKeys = Object.keys(data.request);
   for (const cKey in data.check) {
-    if (checkSyntax(cKey, requestKeys[i]) == false) continue;
+    if (checkSyntax(cKey, requestKeys[i]) == true) {
+      const newData = {
+        request: data.request[cKey],
+        check: data.check[cKey],
+        cKey: cKey,
+        rKey: requestKeys[i],
+      };
 
-    const newData = {
-      request: data.request[cKey],
-      check: data.check[cKey],
-      cKey: cKey,
-      rKey: requestKeys[i],
-    };
-
-    checkType(newData);
-
+      checkType(newData);
+    }
     i++;
   }
 }
@@ -136,6 +135,7 @@ function checkSyntax(cKey, rKey) {
     validateErrors.syntax.errors.push(cKey);
     return false;
   }
+  return true;
 }
 
 function checkValue(data) {
