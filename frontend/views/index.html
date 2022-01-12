@@ -10,19 +10,38 @@
 </head>
 
 <body>
+    <!-- oberer Rand -->
     <div class="top_page_frame">
-        <a href="index.html">
+        <a href="">
             <h1>Wetter-App</h1>
         </a>
         <h1></h1>
         <a href="login.html">Einloggen</a>
+        <div class="burgermenu selection_font clickable">
+            <img id="imgage_burger" src="../images/burgermenu.png">
+            <div class="selection_box option" id="selection_burgermenu">
+                <option value="">Favoriten</option>
+                <option value="">Einstellungen</option>
+                <option value="">Logout</option>
+            </div>
+        </div>
     </div>
-    <div class="search_location">
-        <input type="search" name="" id="input_search_location" placeholder="Suche nach Ort...">
-        <div class="search_location_suggestions">
+    <!-- suchfeld für orte -->
+    <div class="search_location selection_font">
+        <input type="search" id="input_search_location" placeholder="Suche nach Ort...">
+        <div class="selection_box option" id="selection_search_location">
             <option value="">Berlin</option>
             <option value="">Hamburg</option>
             <option value="">München</option>
+        </div>
+    </div>
+
+    <div class="button_selecter selection_font option clickable">
+        <div id="button_selecter_present_future">
+            Gegenwart/Zukunft
+        </div>
+        <div id="button_selecter_past">
+            Vergangenheit
         </div>
     </div>
 </body>

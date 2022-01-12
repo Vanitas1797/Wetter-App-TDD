@@ -16,6 +16,7 @@ body {
 .top_page_frame h1 {
   text-decoration: underline;
   font-size: 48px;
+  width: fit-content;
 }
 .top_page_frame a {
   font-size: 26px;
@@ -24,8 +25,7 @@ body {
   text-decoration: none;
 }
 .search_location {
-  font-size: 24px;
-  width: 986px;
+  width: 50%;
   margin: auto;
 }
 .search_location input {
@@ -38,17 +38,66 @@ body {
 .search_location input:focus::placeholder {
   color: transparent;
 }
-.search_location_suggestions {
-  width: 984px;
+.selection_box {
   border-style: solid;
   border-width: 1px;
   overflow: auto;
-  max-height: 200px;
+  background-color: white;
+  visibility: hidden;
 }
-.search_location_suggestions option {
+.option * {
   padding: 10px;
+  background-color: white;
 }
-.search_location_suggestions option:hover {
+.option *:hover {
   background-color: orange;
   color: white;
+  border: inherit;
+}
+.burgermenu {
+  height: 100px;
+  width: min-content;
+  position: relative;
+  display: none;
+}
+#imgage_burger {
+  height: inherit;
+  width: inherit;
+  margin: auto;
+  float: right;
+}
+#selection_burgermenu {
+  width: fit-content;
+  min-width: 200%;
+  float: right;
+  text-align: center;
+  border-width: 2px;
+}
+#selection_search_location {
+  max-height: 200px;
+  margin-bottom: 50px;
+}
+.selection_font {
+  font-size: 24px;
+}
+.button_selecter {
+  width: 50%;
+  margin: auto;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+.button_selecter * {
+  border-width: 1px;
+  border-style: solid;
+  width: 100%;
+}
+#button_selecter_present_future {
+  border-radius: 20px 0 0 20px;
+}
+#button_selecter_past {
+  border-radius: 0 20px 20px 0;
+}
+.clickable {
+  cursor: pointer;
 }
