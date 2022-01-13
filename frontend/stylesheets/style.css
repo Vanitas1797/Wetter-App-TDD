@@ -1,5 +1,7 @@
 body {
   margin: 0;
+}
+body * {
   font-family: 'Microsoft Yahei';
   color: black;
 }
@@ -41,23 +43,23 @@ body {
 .selection_box {
   border-style: solid;
   border-width: 1px;
-  overflow: auto;
   background-color: white;
-  visibility: hidden;
+  border-color: black;
 }
 .option * {
   padding: 10px;
   background-color: white;
 }
-.option *:hover {
+.options_hover *:hover,
+.option_selected {
   background-color: orange;
   color: white;
-  border: inherit;
 }
-.burgermenu {
+#burgermenu {
   height: 100px;
-  width: min-content;
+  width: fit-content;
   position: relative;
+  /* if logged in: display: block; */
   display: none;
 }
 #imgage_burger {
@@ -67,29 +69,29 @@ body {
   float: right;
 }
 #selection_burgermenu {
-  width: fit-content;
-  min-width: 200%;
+  width: inherit;
+  min-width: 100%;
   float: right;
   text-align: center;
   border-width: 2px;
+  visibility: hidden;
 }
 #selection_search_location {
-  max-height: 200px;
-  margin-bottom: 50px;
+  max-height: 208px;
+  overflow: auto;
+  visibility: hidden;
 }
 .selection_font {
   font-size: 24px;
 }
 .button_selecter {
-  width: 50%;
-  margin: auto;
   text-align: center;
   display: flex;
-  justify-content: center;
 }
 .button_selecter * {
   border-width: 1px;
   border-style: solid;
+  border-color: black;
   width: 100%;
 }
 #button_selecter_present_future {
@@ -100,4 +102,27 @@ body {
 }
 .clickable {
   cursor: pointer;
+}
+#link_login {
+  /* if logged in: visibility: hidden; */
+  visibility: visible;
+}
+#button_selecter_weather {
+  /* if location for weather data has been chosen: visibility: visible; */
+  /* visibility: hidden; */
+}
+#seven_days_weather {
+  padding: 10px;
+  text-align: center;
+}
+#div_weather {
+  width: 50%;
+  margin: auto;
+}
+#div_weather_data {
+  margin-top: 50px;
+}
+#weather_data {
+  display: flex;
+  justify-content: space-evenly;
 }
