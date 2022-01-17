@@ -4,6 +4,12 @@ body {
 body * {
   font-family: 'Microsoft Yahei';
   color: black;
+  font-size: 24px;
+}
+img {
+  height: 30px;
+  width: 30px;
+  align-self: center;
 }
 .top_page_frame {
   background-color: orange;
@@ -70,6 +76,12 @@ body * {
   margin: auto;
   float: right;
 }
+#image_thermostat {
+  align-self: center;
+}
+#image_calendar {
+  align-self: center;
+}
 #selection_burgermenu {
   width: inherit;
   min-width: 100%;
@@ -130,24 +142,26 @@ body * {
 #weather_data {
   display: flex;
   text-align: center;
+  align-self: center;
   overflow: auto;
 }
-#weather_data > * {
-  padding: 10px;
+#weather_data > *:not(:last-child) {
+  margin-right: 50px;
+}
+#weather_data > * > * > *:not(:last-child) {
+  margin-right: 10px;
 }
 #weather_data > * > * {
-  min-width: 100%;
-  width: max-content;
-}
-.temperature {
-  /* width: min-content; */
-}
-.max_temp {
-}
-.min_temp {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 10px;
 }
 .weather_data_one_day {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+.full_length_data {
+  width: 100%;
 }

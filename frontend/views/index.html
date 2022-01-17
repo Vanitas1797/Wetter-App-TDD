@@ -46,12 +46,12 @@
         <div class="button_selecter selection_font option clickable" id="button_selecter_weather">
 
             <!-- auswahlbuttons -->
-            <span class="option_selected" id="button_selecter_present_future">
+            <div class="option_selected" id="button_selecter_present_future">
                 Gegenwart/Zukunft
-            </span>
-            <span id="button_selecter_past">
+            </div>
+            <div id="button_selecter_past">
                 Vergangenheit
-            </span>
+            </div>
         </div>
 
         <!-- gesamter wettercontainer -->
@@ -66,49 +66,71 @@
             <div id="weather_data">
 
                 <!-- einzelne tage mit wetterdaten -->
-                <span class="weather_data_one_day">
-                    <div>
-                        <div>
-                            Datum
-                        </div>
-                        <div>
-                            Wochentag
+                <div class="weather_data_one_day">
+                    <div style="display: flex; justify-content: space-between;">
+                        <img src="../images/kalender.png" id="image_calendar">
+                        <div class="full_length_data">
+                            <div>
+                                17.01.2022
+                            </div>
+                            <div>
+                                Montag
+                            </div>
                         </div>
                     </div>
                     <div class="temperature">
-                        <div style="display: flex; justify-content: space-evenly;">
-                            <span>Max</span>
-                            <span class="max_temp">21°</span>
+                        <img src="../images/thermostat.png" id="image_thermostat">
+                        <div>
+                            <div>Max</div>
+                            <div>Min</div>
                         </div>
-                        <div style="display: flex; justify-content: space-evenly;">
-                            <span>Min</span>
-                            <span class="min_temp">11°</span>
+                        <div>
+                            <div class="max_temp">21°</div>
+                            <div class="min_temp">11°</div>
                         </div>
                     </div>
-                    <div>
-                        <span>Regenwahrscheinlichkeit:</span>
-                        <span>50%</span>
+                    <div class="regen">
+                        <img src="../images/regen.png">
+                        <div class="full_length_data">50%</div>
                     </div>
-                </span>
-                
-                <!-- <span>
+                    <div class="wind">
+                        <img src="../images/wind.png">
+                        <div class="full_length_data">
+                            <div>34 km/h</div>
+                            <div>Nordosten</div>
+                        </div>
+                    </div>
+                    <div class="sunrise_sunset">
+                        <img src="../images/sunrise_sunset.png">
+                        <div>
+                            <div>Aufgang</div>
+                            <div>Untergang</div>
+                        </div>
+                        <div>
+                            <div>08:34</div>
+                            <div>15:57</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <div>
                     sdsdf
-                </span>
-                <span>
+                </div>
+                <div>
                     sdsdf
-                </span>
-                <span>
+                </div>
+                <div>
                     sdsdf
-                </span>
-                <span>
+                </div>
+                <div>
                     sdsdf
-                </span>
-                <span>
+                </div>
+                <div>
                     sdsdf
-                </span>
-                <span>
+                </div>
+                <div>
                     sdsdf
-                </span> -->
+                </div> -->
             </div>
         </div>
     </div>
