@@ -12,7 +12,7 @@
 <body>
 
     <!-- oberer Rand -->
-    <div class="top_page_frame">
+    <header class="top_page_frame">
         <a href="">
             <h1>Wetter-App</h1>
         </a>
@@ -26,7 +26,7 @@
                 <option value="">Logout</option>
             </div>
         </div>
-    </div>
+    </header>
 
     <!-- suchfeld für orte -->
     <div class="search_location selection_font">
@@ -36,12 +36,6 @@
             <option value="">Hamburg</option>
             <option value="">München</option>
             <option value="">Bremen</option>
-            <option value="">Berlin</option>
-            <option value="">Hamburg</option>
-            <option value="">München</option>
-            <option value="">Berlin</option>
-            <option value="">Hamburg</option>
-            <option value="">München</option>
         </div>
     </div>
 
@@ -72,21 +66,32 @@
             <div id="weather_data">
 
                 <!-- einzelne tage mit wetterdaten -->
-                <span>
+                <span class="weather_data_one_day">
                     <div>
-                        Datum
+                        <div>
+                            Datum
+                        </div>
+                        <div>
+                            Wochentag
+                        </div>
+                    </div>
+                    <div class="temperature">
+                        <div style="display: flex; justify-content: space-evenly;">
+                            <span>Max</span>
+                            <span class="max_temp">21°</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-evenly;">
+                            <span>Min</span>
+                            <span class="min_temp">11°</span>
+                        </div>
                     </div>
                     <div>
-                        Wochentag
-                    </div>
-                    <div>
-                        Max
-                    </div>
-                    <div>
-                        Min
+                        <span>Regenwahrscheinlichkeit:</span>
+                        <span>50%</span>
                     </div>
                 </span>
-                <span>
+                
+                <!-- <span>
                     sdsdf
                 </span>
                 <span>
@@ -103,7 +108,7 @@
                 </span>
                 <span>
                     sdsdf
-                </span>
+                </span> -->
             </div>
         </div>
     </div>
@@ -112,9 +117,9 @@
 
     <!-- scripts -->
     <script>
-        var selection_search_location = document.getElementById('selection_search_location')
-        var selection_search_location_style = window.getComputedStyle(selection_search_location)
-        selection_search_location.style.marginBottom = parseInt(selection_search_location_style.maxHeight) - parseInt(selection_search_location_style.height) + 50 + "px"
+        // var selection_search_location = document.getElementById('selection_search_location')
+        // var selection_search_location_style = window.getComputedStyle(selection_search_location)
+        // selection_search_location.style.marginBottom = parseInt(selection_search_location_style.maxHeight) - parseInt(selection_search_location_style.height) + 50 + "px"
     </script>
 </body>
 

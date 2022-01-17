@@ -14,6 +14,9 @@ body * {
   border-style: solid;
   border-width: 1px;
   padding: 0 60px;
+  margin-bottom: 71px;
+  position: sticky;
+  top: 0px;
 }
 .top_page_frame h1 {
   text-decoration: underline;
@@ -28,11 +31,10 @@ body * {
 }
 .search_location {
   width: 50%;
-  margin: auto;
+  margin: auto auto 50px auto;
+  height: 264px;
 }
 .search_location input {
-  margin-top: 71px;
-  height: 50px;
   width: 100%;
   padding: 10px;
   font-size: inherit;
@@ -121,8 +123,31 @@ body * {
 }
 #div_weather_data {
   margin-top: 50px;
+  margin-bottom: 50px;
+  /* if time button for weather data has been clicked: visibility: visible; */
+  /* visibility: hidden; */
 }
 #weather_data {
   display: flex;
-  justify-content: space-evenly;
+  text-align: center;
+  overflow: auto;
+}
+#weather_data > * {
+  padding: 10px;
+}
+#weather_data > * > * {
+  min-width: 100%;
+  width: max-content;
+}
+.temperature {
+  /* width: min-content; */
+}
+.max_temp {
+}
+.min_temp {
+}
+.weather_data_one_day {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
