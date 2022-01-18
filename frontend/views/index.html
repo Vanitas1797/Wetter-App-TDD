@@ -11,14 +11,14 @@
 
 <body>
 
-    <!-- oberer Rand -->
+    <!-- oberer Rand (header) -->
     <header class="top_page_frame">
         <a href="">
             <h1>Wetter-App</h1>
         </a>
         <h1></h1>
         <a href="login.html" id="link_login">Einloggen</a>
-        <div class="selection_font clickable" id="burgermenu">
+        <div class=" clickable" id="burgermenu">
             <img id="imgage_burger" src="../images/burgermenu.png">
             <div class="selection_box option options_hover" id="selection_burgermenu">
                 <option value="">Favoriten</option>
@@ -29,7 +29,8 @@
     </header>
 
     <!-- suchfeld für orte -->
-    <div class="search_location selection_font">
+    <!-- TODO: mit enter oder klicken bestätigen, dann seite laden -->
+    <div class="search_location ">
         <input type="search" id="input_search_location" placeholder="Suche nach Ort...">
         <div class="selection_box option options_hover" id="selection_search_location">
             <option value="">Berlin</option>
@@ -40,25 +41,35 @@
     </div>
 
     <!-- alles ums wetter -->
+    <!-- TODO: wenn ort ausgesucht, dann einblenden -->
     <div id="div_weather">
 
         <!-- zeit auswählen für die anzuzeigenden wetterdaten -->
-        <div class="button_selecter selection_font option clickable" id="button_selecter_weather">
+        <div class="button_selecter option clickable" id="button_selecter_weather">
 
             <!-- auswahlbuttons -->
-            <div class="option_selected" id="button_selecter_present_future">
+            <div class="selected" id="button_selecter_present_future">
                 Gegenwart/Zukunft
             </div>
-            <div id="button_selecter_past">
+            <div class="" id="button_selecter_past">
                 Vergangenheit
             </div>
+        </div>
+
+        <!-- date picker für vergangene wetterdaten -->
+        <!-- TODO: wenn auf "Vergangenheit" geklickt, dann einblenden -->
+        <div id="div_date_picker">
+
+            <!-- datum einfügen -->
+            <div>Es liegen Wetterdaten bis zum <span id="available_weather_data">...</span> vor.</div>
+            <div><input type="date"></div>
         </div>
 
         <!-- gesamter wettercontainer -->
         <div class="" id="div_weather_data">
 
             <!-- überschrift -->
-            <div class="option_selected selection_font" id="seven_days_weather">
+            <div class="design" id="seven_days_weather">
                 7 Tage
             </div>
 
@@ -67,7 +78,7 @@
 
                 <!-- einzelne tage mit wetterdaten -->
                 <div class="weather_data_one_day">
-                    <div style="display: flex; justify-content: space-between;">
+                    <div class="date" style="display: flex; justify-content: space-between;">
                         <img src="../images/kalender.png" id="image_calendar">
                         <div class="full_length_data">
                             <div>
@@ -80,12 +91,9 @@
                     </div>
                     <div class="temperature">
                         <img src="../images/thermostat.png" id="image_thermostat">
-                        <div>
-                            <div>Max</div>
-                            <div>Min</div>
-                        </div>
-                        <div>
+                        <div style="width: 100%;">
                             <div class="max_temp">21°</div>
+                            <hr style="width: 50%; border-color: black;">
                             <div class="min_temp">11°</div>
                         </div>
                     </div>
@@ -102,46 +110,295 @@
                     </div>
                     <div class="sunrise_sunset">
                         <img src="../images/sunrise_sunset.png">
-                        <div>
-                            <div>Aufgang</div>
-                            <div>Untergang</div>
-                        </div>
-                        <div>
-                            <div>08:34</div>
-                            <div>15:57</div>
+                        <div class="full_length_data">
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png">
+                                <div>08:34</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png" style="transform: rotate(180deg);">
+                                <div>15:57</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- <div>
-                    sdsdf
+                <div class="weather_data_one_day">
+                    <div class="date" style="display: flex; justify-content: space-between;">
+                        <img src="../images/kalender.png" id="image_calendar">
+                        <div class="full_length_data">
+                            <div>
+                                17.01.2022
+                            </div>
+                            <div>
+                                Montag
+                            </div>
+                        </div>
+                    </div>
+                    <div class="temperature">
+                        <img src="../images/thermostat.png" id="image_thermostat">
+                        <div style="width: 100%;">
+                            <div class="max_temp">21°</div>
+                            <hr style="width: 50%; border-color: black;">
+                            <div class="min_temp">11°</div>
+                        </div>
+                    </div>
+                    <div class="regen">
+                        <img src="../images/regen.png">
+                        <div class="full_length_data">50%</div>
+                    </div>
+                    <div class="wind">
+                        <img src="../images/wind.png">
+                        <div class="full_length_data">
+                            <div>34 km/h</div>
+                            <div>Nordosten</div>
+                        </div>
+                    </div>
+                    <div class="sunrise_sunset">
+                        <img src="../images/sunrise_sunset.png">
+                        <div class="full_length_data">
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png">
+                                <div>08:34</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png" style="transform: rotate(180deg);">
+                                <div>15:57</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    sdsdf
+                <div class="weather_data_one_day">
+                    <div class="date" style="display: flex; justify-content: space-between;">
+                        <img src="../images/kalender.png" id="image_calendar">
+                        <div class="full_length_data">
+                            <div>
+                                17.01.2022
+                            </div>
+                            <div>
+                                Montag
+                            </div>
+                        </div>
+                    </div>
+                    <div class="temperature">
+                        <img src="../images/thermostat.png" id="image_thermostat">
+                        <div style="width: 100%;">
+                            <div class="max_temp">21°</div>
+                            <hr style="width: 50%; border-color: black;">
+                            <div class="min_temp">11°</div>
+                        </div>
+                    </div>
+                    <div class="regen">
+                        <img src="../images/regen.png">
+                        <div class="full_length_data">50%</div>
+                    </div>
+                    <div class="wind">
+                        <img src="../images/wind.png">
+                        <div class="full_length_data">
+                            <div>34 km/h</div>
+                            <div>Nordosten</div>
+                        </div>
+                    </div>
+                    <div class="sunrise_sunset">
+                        <img src="../images/sunrise_sunset.png">
+                        <div class="full_length_data">
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png">
+                                <div>08:34</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png" style="transform: rotate(180deg);">
+                                <div>15:57</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    sdsdf
+                <div class="weather_data_one_day">
+                    <div class="date" style="display: flex; justify-content: space-between;">
+                        <img src="../images/kalender.png" id="image_calendar">
+                        <div class="full_length_data">
+                            <div>
+                                17.01.2022
+                            </div>
+                            <div>
+                                Montag
+                            </div>
+                        </div>
+                    </div>
+                    <div class="temperature">
+                        <img src="../images/thermostat.png" id="image_thermostat">
+                        <div style="width: 100%;">
+                            <div class="max_temp">21°</div>
+                            <hr style="width: 50%; border-color: black;">
+                            <div class="min_temp">11°</div>
+                        </div>
+                    </div>
+                    <div class="regen">
+                        <img src="../images/regen.png">
+                        <div class="full_length_data">50%</div>
+                    </div>
+                    <div class="wind">
+                        <img src="../images/wind.png">
+                        <div class="full_length_data">
+                            <div>34 km/h</div>
+                            <div>Nordosten</div>
+                        </div>
+                    </div>
+                    <div class="sunrise_sunset">
+                        <img src="../images/sunrise_sunset.png">
+                        <div class="full_length_data">
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png">
+                                <div>08:34</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png" style="transform: rotate(180deg);">
+                                <div>15:57</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    sdsdf
+                <div class="weather_data_one_day">
+                    <div class="date" style="display: flex; justify-content: space-between;">
+                        <img src="../images/kalender.png" id="image_calendar">
+                        <div class="full_length_data">
+                            <div>
+                                17.01.2022
+                            </div>
+                            <div>
+                                Montag
+                            </div>
+                        </div>
+                    </div>
+                    <div class="temperature">
+                        <img src="../images/thermostat.png" id="image_thermostat">
+                        <div style="width: 100%;">
+                            <div class="max_temp">21°</div>
+                            <hr style="width: 50%; border-color: black;">
+                            <div class="min_temp">11°</div>
+                        </div>
+                    </div>
+                    <div class="regen">
+                        <img src="../images/regen.png">
+                        <div class="full_length_data">50%</div>
+                    </div>
+                    <div class="wind">
+                        <img src="../images/wind.png">
+                        <div class="full_length_data">
+                            <div>34 km/h</div>
+                            <div>Nordosten</div>
+                        </div>
+                    </div>
+                    <div class="sunrise_sunset">
+                        <img src="../images/sunrise_sunset.png">
+                        <div class="full_length_data">
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png">
+                                <div>08:34</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png" style="transform: rotate(180deg);">
+                                <div>15:57</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    sdsdf
+                <div class="weather_data_one_day">
+                    <div class="date" style="display: flex; justify-content: space-between;">
+                        <img src="../images/kalender.png" id="image_calendar">
+                        <div class="full_length_data">
+                            <div>
+                                17.01.2022
+                            </div>
+                            <div>
+                                Montag
+                            </div>
+                        </div>
+                    </div>
+                    <div class="temperature">
+                        <img src="../images/thermostat.png" id="image_thermostat">
+                        <div style="width: 100%;">
+                            <div class="max_temp">21°</div>
+                            <hr style="width: 50%; border-color: black;">
+                            <div class="min_temp">11°</div>
+                        </div>
+                    </div>
+                    <div class="regen">
+                        <img src="../images/regen.png">
+                        <div class="full_length_data">50%</div>
+                    </div>
+                    <div class="wind">
+                        <img src="../images/wind.png">
+                        <div class="full_length_data">
+                            <div>34 km/h</div>
+                            <div>Nordosten</div>
+                        </div>
+                    </div>
+                    <div class="sunrise_sunset">
+                        <img src="../images/sunrise_sunset.png">
+                        <div class="full_length_data">
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png">
+                                <div>08:34</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png" style="transform: rotate(180deg);">
+                                <div>15:57</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    sdsdf
-                </div> -->
+                <div class="weather_data_one_day">
+                    <div class="date" style="display: flex; justify-content: space-between;">
+                        <img src="../images/kalender.png" id="image_calendar">
+                        <div class="full_length_data">
+                            <div>
+                                17.01.2022
+                            </div>
+                            <div>
+                                Montag
+                            </div>
+                        </div>
+                    </div>
+                    <div class="temperature">
+                        <img src="../images/thermostat.png" id="image_thermostat">
+                        <div style="width: 100%;">
+                            <div class="max_temp">21°</div>
+                            <hr style="width: 50%; border-color: black;">
+                            <div class="min_temp">11°</div>
+                        </div>
+                    </div>
+                    <div class="regen">
+                        <img src="../images/regen.png">
+                        <div class="full_length_data">50%</div>
+                    </div>
+                    <div class="wind">
+                        <img src="../images/wind.png">
+                        <div class="full_length_data">
+                            <div>34 km/h</div>
+                            <div>Nordosten</div>
+                        </div>
+                    </div>
+                    <div class="sunrise_sunset">
+                        <img src="../images/sunrise_sunset.png">
+                        <div class="full_length_data">
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png">
+                                <div>08:34</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <img src="../images/pfeile-nach-oben.png" style="transform: rotate(180deg);">
+                                <div>15:57</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-
-
     <!-- scripts -->
     <script>
-        // var selection_search_location = document.getElementById('selection_search_location')
-        // var selection_search_location_style = window.getComputedStyle(selection_search_location)
-        // selection_search_location.style.marginBottom = parseInt(selection_search_location_style.maxHeight) - parseInt(selection_search_location_style.height) + 50 + "px"
+
     </script>
 </body>
 
