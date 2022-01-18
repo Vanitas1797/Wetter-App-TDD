@@ -24,13 +24,18 @@ img {
   position: sticky;
   top: 0px;
 }
-.top_page_frame h1 {
+#website_title {
   text-decoration: underline;
-  font-size: 48px;
+}
+#page_title {
+  margin: 0 auto;
+}
+.top_page_frame h1 {
   width: fit-content;
+  font-size: 48px;
 }
 .top_page_frame a {
-  font-size: 26px;
+  font-size: 36px;
   font-weight: bold;
   color: black;
   text-decoration: none;
