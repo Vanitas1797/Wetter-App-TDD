@@ -63,11 +63,15 @@ img {
   padding: 10px;
   background-color: white;
 }
+.design *,
 .design,
 .selected,
 .options_hover > :hover {
   background-color: orange;
   color: white;
+}
+.next_element {
+  margin: 50px auto;
 }
 #burgermenu {
   height: 100px;
@@ -128,20 +132,19 @@ img {
   width: 50%;
   margin: auto;
 }
-#seven_days_weather {
+.data_title {
   padding: 10px;
   text-align: center;
 }
 #div_weather {
   margin: auto;
   /* if location for weather data has been chosen: display: block; */
-  display: none;
+  /* display: none; */
 }
 #div_weather_data {
   margin-top: 50px;
   margin-bottom: 50px;
   max-width: 90%;
-  width: fit-content;
   margin-inline: auto;
 }
 #weather_data {
@@ -150,15 +153,18 @@ img {
   align-self: center;
   overflow: auto;
 }
-#weather_data > * > * {
+#weather_data > .weather_data_one_data_fragment > * {
   display: flex;
   justify-content: space-between;
   margin: 10px;
 }
-#weather_data > .weather_data_one_day > * > :not(:last-child) {
+#weather_data > .weather_data_one_data_fragment > * > *:last-child {
+  margin: 0 auto;
+}
+#weather_data > .weather_data_one_data_fragment img {
   margin-right: 10px;
 }
-.weather_data_one_day {
+.weather_data_one_data_fragment {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -166,7 +172,7 @@ img {
   border-style: solid;
   border-width: 1px;
 }
-.weather_data_one_day:not(:last-child) {
+.weather_data_one_data_fragment:not(:last-child) {
   border-width: 1px 0 1px 1px;
 }
 .full_length_data {
@@ -180,4 +186,9 @@ img {
 #div_date_picker > * {
   margin: 10px auto;
   width: fit-content;
+}
+#current_weather {
+}
+.align {
+  margin: auto;
 }
