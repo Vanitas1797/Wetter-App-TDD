@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../stylesheets/style.css">
+    <title>Wetter-App</title>
+</head>
+
+<body>
+
+    <!-- oberer Rand (header) -->
+    <header class="top_page_frame">
+        <a href="index.html">
+            <h1 id="website_title">Wetter-App</h1>
+        </a>
+        <h1></h1>
+        <a href="login.html" id="link_login">Einloggen</a>
+        <div class=" clickable" id="burgermenu">
+            <img id="imgage_burger" src="../images/burgermenu.png">
+            <div class="selection_box option options_hover" id="selection_burgermenu">
+                <option value="">Favoriten</option>
+                <option value="">Einstellungen</option>
+                <option value="">Logout</option>
+            </div>
+        </div>
+    </header>
+
+    <!-- suchfeld für orte -->
+    <!-- TODO: mit enter oder klicken bestätigen, dann seite laden -->
+    <div class="search_location ">
+        <input type="search" id="input_search_location" placeholder="Suche nach Ort...">
+        <div class="selection_box option options_hover" id="selection_search_location">
+            <option value="">Berlin</option>
+            <option value="">Hamburg</option>
+            <option value="">München</option>
+            <option value="">Bremen</option>
+        </div>
+    </div>
+
+    <!-- alles ums wetter -->
+    <!-- TODO: wenn ort ausgesucht, dann einblenden -->
+    <div id="div_weather">
+
+        <!-- zeit auswählen für die anzuzeigenden wetterdaten -->
+        <div class="button_selecter option clickable" id="button_selecter_weather">
+
+            <!-- auswahlbuttons -->
+            <div class="selected" id="button_selecter_present_future">
+                Gegenwart/Zukunft
+            </div>
+            <div class="" id="button_selecter_past">
+                Vergangenheit
+            </div>
+        </div>
+
+        <!-- date picker für vergangene wetterdaten -->
+        <!-- TODO: wenn auf "Vergangenheit" geklickt, dann einblenden -->
+        <div id="div_date_picker">
+
+            <!-- datum einfügen -->
+            <div>Es liegen Wetterdaten bis zum <span id="available_weather_data">28.02.2017</span> vor.</div>
+            <div><input type="date"></div>
+        </div>
+
+        <!-- gesamter wettercontainer -->
+        <div class="" id="div_weather_data">
+
+            <!-- aktuelles Wetter -->
+            <div class="next_element">
+                <div class="design element_title">
+                    <div>Aktuell</div>
+                    <div>48 Stunden</div>
+                </div>
+
+                <!-- wetterdaten -->
+                <div id="weather_data">
+
+                    <!-- einzelne tage mit wetterdaten -->
+                    <div class="weather_data_one_data_fragment" id="current_weather">
+                        <div class="date" style="display: flex; justify-content: space-between;" title="Uhrzeit">
+                            <img src="../images/uhr.png" id="image_calendar">
+                            <div>
+                                <div>
+                                    08:00
+                                </div>
+                            </div>
+                        </div>
+                        <div class="temperature" title="Temperatur">
+                            <img src="../images/thermostat.png" id="image_thermostat">
+                            <div>
+                                <div class="max_temp">21°C</div>
+                            </div>
+                        </div>
+                        <div class="regen" title="Regenwahrscheinlichkeit">
+                            <img src="../images/regen.png">
+                            <div>50%</div>
+                        </div>
+                        <div class="wind" title="Windgeschwindigkeit und aus welcher Richtung">
+                            <img src="../images/wind.png">
+                            <div>
+                                <div title="Windgeschwindigkeit">34 km/h</div>
+                                <hr>
+                                <div title="aus Richtung">Nordosten</div>
+                            </div>
+                        </div>
+                        <div class="wind_vane" title="Windböengeschwindigkeit">
+                            <img src="../images/wind-vane.png">
+                            <div>
+                                <div>55 km/h</div>
+                            </div>
+                        </div>
+                        <div class="humidity" title="Luftfeuchtigkeit">
+                            <img src="../images/feuchtigkeit.png">
+                            <div>
+                                <div>30%</div>
+                            </div>
+                        </div>
+                        <div class="pressure" title="Luftdruck">
+                            <img src="../images/gauge.png">
+                            <div>
+                                <div>1055 hPa</div>
+                            </div>
+                        </div>
+                        <div class="cloudiness" title="Bewölktheit">
+                            <img src="../images/bewolkt.png">
+                            <div>
+                                <div>19%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- überschrift -->
+            <div class="next_element">
+                <div class="design element_title">
+                    7 Tage
+                </div>
+
+                <!-- wetterdaten -->
+                <div id="weather_data">
+
+                    <!-- einzelne tage mit wetterdaten -->
+                    <div class="weather_data_one_data_fragment">
+                        <div class="date" style="display: flex; justify-content: space-between;"
+                            title="Datum und Wochentag">
+                            <img src="../images/kalender.png" id="image_calendar">
+                            <div>
+                                <div>
+                                    17.01.2022
+                                </div>
+                                <div>
+                                    Montag
+                                </div>
+                            </div>
+                        </div>
+                        <div class="temperature" title="Maximale Temperatur und minimale Temperatur">
+                            <img src="../images/thermostat.png" id="image_thermostat">
+                            <div>
+                                <div class="max_temp">21°C</div>
+                                <hr>
+                                <div class="min_temp">11°C</div>
+                            </div>
+                        </div>
+                        <div class="regen" title="Regenwahrscheinlichkeit">
+                            <img src="../images/regen.png">
+                            <div>50%</div>
+                        </div>
+                        <div class="wind" title="Windgeschwindigkeit und aus welcher Richtung">
+                            <img src="../images/wind.png">
+                            <div>
+                                <div title="Windgeschwindigkeit">34 km/h</div>
+                                <hr>
+                                <div title="aus Richtung">Nordosten</div>
+                            </div>
+                        </div>
+                        <div class="wind_vane" title="Windböengeschwindigkeit">
+                            <img src="../images/wind-vane.png">
+                            <div>
+                                <div>55 km/h</div>
+                            </div>
+                        </div>
+                        <div class="humidity" title="Luftfeuchtigkeit">
+                            <img src="../images/feuchtigkeit.png">
+                            <div>
+                                <div>30%</div>
+                            </div>
+                        </div>
+                        <div class="pressure" title="Luftdruck">
+                            <img src="../images/gauge.png">
+                            <div>
+                                <div>1055 hPa</div>
+                            </div>
+                        </div>
+                        <div class="cloudiness" title="Bewölktheit">
+                            <img src="../images/bewolkt.png">
+                            <div>
+                                <div>19%</div>
+                            </div>
+                        </div>
+                        <div class="sunrise_sunset" title="Sonnenaufgang und Sonnenuntergang">
+                            <img src="../images/sunrise_sunset.png">
+                            <div>
+                                <div style="display: flex; justify-content: space-between;" title="Sonnenaufgang">
+                                    <img src="../images/pfeile-nach-oben.png">
+                                    <div>08:34</div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;" title="Sonnenuntergang">
+                                    <img src="../images/pfeile-nach-oben.png" style="transform: rotate(180deg);">
+                                    <div>15:57</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="moonrise_moonset" title="Mondaufgang, Monduntergang und Mondphase">
+                            <img src="../images/moon.png">
+                            <div class="">
+                                <div style="display: flex; justify-content: space-between;" title="Mondaufgang">
+                                    <img src="../images/pfeile-nach-oben.png">
+                                    <div>08:34</div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;" title="Monduntergang">
+                                    <img src="../images/pfeile-nach-oben.png" style="transform: rotate(180deg);">
+                                    <div>15:57</div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;" class="moonphase"
+                                    title="Mondphase (0 - 1)">
+                                    <img src="../images/mondphasen.png">
+                                    <div class="align">0.5</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- scripts -->
+    <script>
+
+    </script>
+</body>
+
+</html>

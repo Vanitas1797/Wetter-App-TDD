@@ -2,6 +2,7 @@ const sqlite = require('sqlite3');
 const dbConfig = require('config').get('database');
 const fs = require('fs');
 const createHttpError = require('http-errors');
+const { tables } = require('../objects/database/tables');
 
 const db = new sqlite.Database(dbConfig.storage);
 module.exports = {
@@ -98,9 +99,57 @@ module.exports = {
     updateWeatherDataCurrent: fs
       .readFileSync('backend/database/queries/updateWeatherDataCurrent.sql')
       .toString(),
-      updateWeatherDataTime: fs
+    updateWeatherDataTime: fs
       .readFileSync('backend/database/queries/updateWeatherDataTime.sql')
       .toString(),
+  },
+  queries2: {
+    getSavedLocationsByUserId: `SELECT * FROM ${
+      tables.saved_location.name
+    } AS sl WHERE sl.${tables.saved_location().fk_user_id.name} = ?`,
+    saveFavorite: `INSERT INTO ${tables.saved_location.name} (${
+      tables.saved_location().fk_user_id.name
+    }, ${tables.saved_location().fk_location_id.name}) VALUES (?, ?)`,
+    getLocation: `SELECT * FROM ${tables.location.name} AS l WHERE l.${
+      tables.location().pk_location_id.name
+    } = ?`,
+    getWeatherDataDayByLocationIdAndDate: `SELECT * FROM ${
+      tables.weather_data_day.name
+    } AS wd WHERE wd.${
+      tables.weather_data_day().fk_location_id.name
+    } = ? AND wd.${tables.weather_data_day().date.name} = ?`,
+    getWeatherDataTimeByWeatherDataDayId: `SELECT * FROM ${
+      tables.weather_data_time.name
+    } AS wt WHERE wt.${
+      tables.weather_data_time().fk_weather_data_day_id.name
+    } = ?`,
+    saveChangedPassword: `UPDATE ${tables.user.name} SET ${
+      tables.user().password.name
+    } = ? WHERE ${tables.user().pk_user_id.name} = ?`,
+    deleteUser: `DELETE FROM ${tables.user.name} WHERE ${
+      tables.user().pk_user_id.name
+    } = ?`,
+    getUser: {
+      query: `SELECT * FROM ${tables.user.name} AS u WHERE ${
+        tables.user().pk_user_id.name
+      } = ?`,
+      from: tables.user(),
+    },
+    registerUser: `INSERT INTO ${tables.user.name} (${
+      tables.user().email_address.name
+    }, ${tables.user().password.name}) VALUES (?, ?)`,
+    getUserByEmail: {
+      query: `SELECT * FROM ${tables.user.name} AS u WHERE ${
+        tables.user().email_address.name
+      } = ?`,
+      from: tables.user(),
+    },
+    getUserByEmailAndPassword: {
+      query: `SELECT * FROM ${tables.user.name} AS u WHERE ${
+        tables.user().email_address.name
+      } = ? AND ${tables.user().password.name} = ?`,
+      from: tables.user(),
+    },
   },
   /**
    *
@@ -111,26 +160,39 @@ module.exports = {
     return new Promise((resolve, reject) => {
       db.all(sql, params, (err, rows) => {
         if (err) {
-          err.message += sql ? ' on query ' + sql : '';
-          reject(new Error(err));
+          reject(
+            new Error(err + ' on query ' + insertParamsIntoQuery(sql, params))
+          );
         } else {
           resolve(rows);
         }
       });
     });
   },
-  async all_throws(sql, params) {
+  async all_throws404(sql, params) {
     let rows = await this.all(sql, params);
     if (!rows.length) {
-      throw createHttpError.NotFound('No rows on query: ' + sql);
+      throw createHttpError.NotFound(
+        'No rows on query: ' + insertParamsIntoQuery(sql, params)
+      );
     }
     return rows;
   },
-  run(sql, params) {
+  run_throws400(sql, params) {
     return new Promise((resolve, reject) => {
       db.run(sql, params, (err) => {
         if (err) {
-          reject(new Error(err));
+          if (err.errno == 19) {
+            reject(
+              createHttpError.BadRequest(
+                err + ' on query ' + insertParamsIntoQuery(sql, params)
+              )
+            );
+          } else {
+            reject(
+              new Error(err + ' on query ' + insertParamsIntoQuery(sql, params))
+            );
+          }
         } else {
           resolve(true);
         }
@@ -141,18 +203,37 @@ module.exports = {
     return new Promise((resolve, reject) => {
       db.get(sql, params, (err, row) => {
         if (err) {
-          reject(new Error(err));
+          reject(
+            new Error(err + ' on query ' + insertParamsIntoQuery(sql, params))
+          );
         } else {
           resolve(row);
         }
       });
     });
   },
-  async get_throws(sql, params) {
+  async get_throws404(sql, params) {
     let row = await this.get(sql, params);
     if (!row) {
-      throw createHttpError.NotFound('No row on query: ' + sql);
+      throw createHttpError.NotFound(
+        'No row on query: ' + insertParamsIntoQuery(sql, params)
+      );
     }
     return row;
   },
 };
+
+function insertParamsIntoQuery(query, params) {
+  let i = 0;
+  let newQuery = '';
+  for (const c of query) {
+    if (c == '?') {
+      newQuery += params[i];
+      i++;
+    } else {
+      newQuery += c;
+    }
+  }
+
+  return newQuery;
+}

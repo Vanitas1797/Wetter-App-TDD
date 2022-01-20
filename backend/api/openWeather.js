@@ -1,4 +1,12 @@
 const { default: axios } = require('axios');
+const config = require('../../config/config');
+const database = require('../database/database');
+const { getDate } = require('../help/time');
+
+const minutes =
+  config.backend.api.openWeatherApi.execution.dataUpdate.OneCallApi.interval
+    .minutes;
+const timezoneDE = config.backend.time.timezoneOffsetSeconds().de;
 
 module.exports = {
   /**
@@ -9,7 +17,19 @@ module.exports = {
     const res = await axios.get(url);
     return res;
   },
-  getLocaleTimeInMilliseconds(time, timezoneOffset) {
-    return (time + timezoneOffset) * 1000;
+  async isUpdated(locationId) {
+    let row = await database.get_throws404(
+      database.queries.getWeatherDataCurrent,
+      locationId
+    );
+
+    let now = new Date().getTime();
+    let ludt = getDate(row.last_updated_date_time, timezoneDE);
+    ludt = new Date(ludt.setMinutes(ludt.getMinutes() + minutes)).getTime();
+    if (ludt <= now) {
+      return false;
+    }
+
+    return true;
   },
 };

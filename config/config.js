@@ -46,9 +46,26 @@ const api = {
   },
 };
 
+const secrets = {
+  login_system: 'ksadkjdsakdashk&$/&%/$tgaszgzs7&&75687329462',
+};
+
+const time = {
+  timezoneOffsetSeconds() {
+    return {
+      de: 1 * this.timezoneOffsetSecondsFactor.de,
+    };
+  },
+  timezoneOffsetSecondsFactor: {
+    de: 3600,
+  },
+};
+
 module.exports = {
   backend: {
     api,
+    time,
+    secrets,
   },
   frontend: {},
 };

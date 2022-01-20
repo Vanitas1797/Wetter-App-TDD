@@ -1,0 +1,245 @@
+body {
+  margin: 0;
+}
+body * {
+  font-family: 'Microsoft Yahei';
+  color: black;
+  font-size: 24px;
+}
+img {
+  height: 30px;
+  width: 30px;
+  align-self: center;
+}
+.top_page_frame {
+  background-color: orange;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+  padding: 0 60px;
+  margin-bottom: 50px;
+  position: sticky;
+  top: 0px;
+}
+.top_page_frame > * {
+  width: 100%;
+}
+#website_title {
+  text-decoration: underline;
+}
+#page_title {
+  margin: 0 auto;
+}
+.top_page_frame h1 {
+  width: fit-content;
+  font-size: 48px;
+}
+.top_page_frame a {
+  font-size: 36px;
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+}
+.search_location {
+  width: 50%;
+  margin: auto auto 50px auto;
+  height: 264px;
+}
+.search_location input {
+  width: 100%;
+  padding: 10px;
+  font-size: inherit;
+}
+.search_location input:focus::placeholder {
+  color: transparent;
+}
+.selection_box {
+  border-style: solid;
+  border-width: 1px;
+  background-color: white;
+  border-color: black;
+}
+.option * {
+  padding: 10px;
+  background-color: white;
+}
+.design *,
+.design,
+.selected,
+.options_hover > :hover {
+  background-color: orange;
+  color: white;
+}
+.next_element {
+  margin: 50px auto;
+}
+#burgermenu {
+  height: 100px;
+  width: fit-content;
+  position: relative;
+  /* if logged in: display: block; */
+  display: none;
+}
+#imgage_burger {
+  height: inherit;
+  width: inherit;
+  margin: auto;
+  float: right;
+}
+#image_thermostat {
+  align-self: center;
+}
+#image_calendar {
+  align-self: center;
+}
+#selection_burgermenu {
+  width: inherit;
+  min-width: 100%;
+  float: right;
+  text-align: center;
+  border-width: 2px;
+  visibility: hidden;
+}
+#selection_search_location {
+  max-height: 208px;
+  overflow: auto;
+  visibility: hidden;
+}
+.button_selecter {
+  text-align: center;
+  display: flex;
+}
+.button_selecter * {
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  width: 100%;
+}
+#button_selecter_present_future {
+  border-radius: 20px 0 0 20px;
+}
+#button_selecter_past {
+  border-radius: 0 20px 20px 0;
+}
+.clickable {
+  cursor: pointer;
+}
+#link_login {
+  /* if logged in: display: none; */
+  display: block;
+}
+#button_selecter_weather {
+  width: 50%;
+  margin: auto;
+}
+.element_title {
+  padding: 10px;
+  text-align: center;
+}
+#div_weather {
+  margin: auto;
+  /* if location for weather data has been chosen: display: block; */
+  display: none;
+}
+#div_weather_data {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  max-width: 90%;
+  margin-inline: auto;
+}
+#weather_data {
+  display: flex;
+  text-align: center;
+  align-self: center;
+  overflow: auto;
+}
+#weather_data > .weather_data_one_data_fragment > * {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+}
+#weather_data > .weather_data_one_data_fragment > * > *:last-child {
+  margin: 0 auto;
+}
+#weather_data > .weather_data_one_data_fragment img {
+  margin-right: 10px;
+}
+.weather_data_one_data_fragment {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+}
+.weather_data_one_data_fragment:not(:last-child) {
+  border-width: 1px 0 1px 1px;
+}
+.full_length_data {
+  width: 100%;
+}
+#div_date_picker {
+  margin: 50px auto;
+  /* if "Vergangenheit" geklickt, dann display: block; */
+  display: none;
+}
+#div_date_picker > * {
+  margin: 10px auto;
+  width: fit-content;
+}
+#current_weather {
+}
+.align {
+  margin: auto;
+}
+.form {
+  margin: auto;
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+}
+.form > * {
+  margin-bottom: 50px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.form > * > *:not(:last-child) {
+  margin-bottom: 10px;
+}
+input {
+  padding: 7px;
+}
+#available_weather_data {
+  color: orange;
+}
+.submit_button {
+  width: 50%;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.flex_list > * {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.flex_list hr {
+  width: 100%;
+  height: 2px;
+}
+.parting_line {
+  background-color: rgb(200, 200, 200);
+  height: 2px;
+}
+.favorite_category > * {
+  margin: auto;
+}
+#bin_img {
+  width: 50px;
+  height: 50px;
+}

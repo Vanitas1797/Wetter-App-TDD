@@ -1,3 +1,3 @@
 SELECT *
 FROM state_code
-WHERE state_code_2 = ?
+WHERE state_name = ? OR state_code_2 = ?

@@ -2,12 +2,24 @@ const express = require('express');
 const path = require('path');
 const logger = require('morgan');
 const fs = require('fs');
+const session = require('express-session');
+const time = require('./help/time');
+const config = require('../config/config');
 
 const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    secret: config.backend.secrets.login_system,
+    saveUninitialized: false,
+    resave: false,
+    cookie: { maxAge: time.toMilliseconds({ mi: 5 }) },
+  })
+);
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static(path.join(__dirname, 'public')));
@@ -16,7 +28,7 @@ app.use('/user', require('./routes/user/user'));
 app.use('/location', require('./routes/location/location'));
 
 fs.copyFileSync(
-  `backend/database/db/wetter-app-copy.db`,
+  `backend/database/db/wetter-app-dev-copy.db`,
   `backend/database/db/wetter-app-dev.db`
 );
 
