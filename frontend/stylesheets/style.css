@@ -132,6 +132,10 @@ img {
   /* if logged in: display: none; */
   display: block;
 }
+#link_register {
+  text-align: right;
+  display: block;
+}
 #button_selecter_weather {
   width: 50%;
   margin: auto;

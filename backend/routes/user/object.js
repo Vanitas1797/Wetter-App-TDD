@@ -82,7 +82,7 @@ module.exports = {
     },
   },
   login: {
-    get: {
+    post: {
       request: {
         params: {},
         query: {},
@@ -92,7 +92,7 @@ module.exports = {
         },
         validation: {},
       },
-      response: { message: 'User has logged in' },
+      response: { message: 'User has logged in', user_id: 0 },
     },
   },
   logout: {

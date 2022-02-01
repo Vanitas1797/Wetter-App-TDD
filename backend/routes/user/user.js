@@ -145,16 +145,16 @@ router.get('/forgotPassword', async (req, res, next) => {
     },
   });
 });
-router.get('/login', async (req, res, next) => {
+router.post('/login', async (req, res, next) => {
   initRouter({
     next: next,
     response: res,
     request: {
       req: req,
-      check: object.login.get.request,
+      check: object.login.post.request,
     },
     exe: async () => {
-      let body = object.login.get.request.body;
+      let body = object.login.post.request.body;
       body = req.body;
 
       let row = database.queries2.getUserByEmail.from;
@@ -177,8 +177,9 @@ router.get('/login', async (req, res, next) => {
 
       let sess = req.session;
       sess.user_id = row.pk_user_id;
+      object.login.post.response.user_id = row.pk_user_id;
 
-      return object.login.get.response;
+      return object.login.post.response;
     },
   });
 });
@@ -189,7 +190,7 @@ router.get('/logout', async (req, res, next) => {
     request: { req: req, check: object.logout.get.request },
     exe: async () => {
       let sess = req.session;
-      
+
       sess.destroy((err) => {
         if (err) {
           throw new Error(err);

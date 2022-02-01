@@ -8,7 +8,13 @@ module.exports = {
       country,
       country,
     ]);
+    if (!row)
+      row = await database.get(database.queries.getCountry, [
+        'null',
+        'null',
+        'null',
+      ]);
 
-    return row.pk_country_code_id;
+    return row ? row.pk_country_code_id : null;
   },
 };

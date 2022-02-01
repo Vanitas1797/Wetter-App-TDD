@@ -348,7 +348,7 @@ async function insertByCoordinatesByLocationName(requestBody) {
   let data = await apiCallCoordinatesByLocationName(requestBody);
   for (const d of data) {
     let insert = [
-      d.local_names.de || d.local_names.en || d.name,
+      d.local_names ? d.local_names.de || d.local_names.en : d.name,
       await state_code(d.state),
       await country_code(d.country),
       null,
@@ -364,7 +364,7 @@ async function insertByReverseGeocoding(requestBody) {
   let data = await apiCallReverseGeocoding(requestBody);
   for (const d of data) {
     let insert = [
-      d.local_names.de || d.local_names.en || d.name,
+      d.local_names ? d.local_names.de || d.local_names.en : d.name,
       await state_code(d.state),
       await country_code(d.country),
       null,

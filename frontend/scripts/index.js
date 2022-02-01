@@ -1,3 +1,4 @@
+import { logged_user_id } from './login.js'; //TODO
 // alle elemente
 
 // oberer Rand
@@ -6,6 +7,7 @@ const selection_burgermenu = document.getElementById('selection_burgermenu');
 const favoriten = document.getElementById('favorite');
 const settings = document.getElementById('settings');
 const logout = document.getElementById('logout');
+const link_login = document.getElementById('link_login');
 
 // suchleiste
 const input_search_location = document.getElementById('input_search_location');
@@ -25,7 +27,9 @@ const button_selecter_present_future = document.getElementById(
 const button_selecter_past = document.getElementById('button_selecter_past');
 // datum
 const div_date_picker = document.getElementById('div_date_picker');
-const available_weather_data = document.getElementById('available_weather_data');
+const available_weather_data = document.getElementById(
+  'available_weather_data'
+);
 const picked_date = document.getElementById('picked_date');
 // wetterdaten
 const div_weather_data = document.getElementById('div_weather_data');
@@ -35,3 +39,11 @@ const current_weather = document.getElementById('current_weather');
 // future
 const weather_data_future = document.getElementById('weather_data_future');
 const future_weather = document.getElementById('future_weather');
+
+// events
+document.onload = () => {
+  if (logged_user_id) {
+    link_login.style.display = 'none';
+    burgermenu.style.display = 'block';
+  }
+};
