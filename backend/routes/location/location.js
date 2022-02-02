@@ -19,6 +19,7 @@ const {
 const openWeather = require('../../api/openWeather');
 const openWeatherResponses = require('../../objects/apis/openWeather/responses');
 const { tables } = require('../../objects/database/tables');
+const { firstSubstring } = require('../../help/database');
 const router = express.Router();
 
 const currentAndForecastWeatherData =
@@ -294,9 +295,14 @@ async function apiCallCurrentAndForecastWeatherData_throws(reqParamLocationId) {
 }
 
 async function apiCallCoordinatesByZipOrPostCode(requestBody) {
+  let row = await database.get(database.queries.getCountry, [
+    requestBody.country_name,
+    '',
+    '',
+  ]);
   let url = apiUrls.geocoding.directGeocoding.coordinatesByZipOrPostCode(
     requestBody.zip_code,
-    requestBody.country_name
+    row.country_code_2
   );
   let apiResponse = await getDataFromApi(url);
   let data = coordinatesByZipOrPostCode;
@@ -332,23 +338,24 @@ async function insertRowLocation(insert) {
 }
 
 async function insertByCoordinatesByZipOrPostCode(data) {
-  let insert = [
-    data.name,
-    await state_code(data.state),
-    await country_code(data.country),
-    data.zip,
-    data.lat,
-    data.lon,
-    null,
-  ];
-  await insertRowLocation(insert);
-}
-
-async function insertByCoordinatesByLocationName(requestBody) {
-  let data = await apiCallCoordinatesByLocationName(requestBody);
   for (const d of data) {
     let insert = [
-      d.local_names ? d.local_names.de || d.local_names.en : d.name,
+      d.local_names ? d.local_names.de || d.local_names.en || d.name : d.name,
+      await state_code(d.state),
+      await country_code(d.country),
+      d.zip,
+      d.lat,
+      d.lon,
+      null,
+    ];
+    await insertRowLocation(insert);
+  }
+}
+
+async function insertByCoordinatesByLocationName(data) {
+  for (const d of data) {
+    let insert = [
+      d.local_names ? d.local_names.de || d.local_names.en || d.name : d.name,
       await state_code(d.state),
       await country_code(d.country),
       null,
@@ -360,11 +367,10 @@ async function insertByCoordinatesByLocationName(requestBody) {
   }
 }
 
-async function insertByReverseGeocoding(requestBody) {
-  let data = await apiCallReverseGeocoding(requestBody);
+async function insertByReverseGeocoding(data) {
   for (const d of data) {
     let insert = [
-      d.local_names ? d.local_names.de || d.local_names.en : d.name,
+      d.local_names ? d.local_names.de || d.local_names.en || d.name : d.name,
       await state_code(d.state),
       await country_code(d.country),
       null,
@@ -384,6 +390,14 @@ async function getRowsLocationsFromUserInput(params) {
   return rows;
 }
 
+async function getRowsLocationsFromUserInput_throws404(params) {
+  let rows = await database.all_throws404(
+    database.queries.getAllLocationsFromUserInput,
+    params
+  );
+  return rows;
+}
+
 async function updateByCoordinatesByZipOrPostCode(data, locationId) {
   await database.run_throws400(
     `UPDATE location
@@ -393,14 +407,68 @@ async function updateByCoordinatesByZipOrPostCode(data, locationId) {
   );
 }
 
+async function updateByCoordinatesByLocationName(data, locationId) {
+  await database.run_throws400(
+    `UPDATE location
+SET zip_code = ?
+WHERE pk_location_id = ?`,
+    [data.zip, locationId]
+  );
+}
+
+async function updateByReverseGeocoding(data, locationId) {}
+
 async function isCoordinatesByZipOrPostCodeInDb(data) {
   let row = await database.get(
     `SELECT *
     FROM location
     JOIN country_code ON pk_country_code_id = fk_country_code_id
     JOIN state_code ON pk_state_code_id = fk_state_code_id
-    WHERE city_name = ? AND latitude = ? AND longitude = ? AND country_name = ? AND state_name = ?`,
-    [data.name, data.lat, data.lon, data.country, data.state || null]
+    WHERE city_name = ? AND latitude = ? AND longitude = ? AND country_name = ?`,
+    [data.name, data.lat, data.lon, data.country]
+  );
+  if (row) return row.pk_location_id;
+  return false;
+}
+
+async function isCoordinatesByLocationNameInDb(data) {
+  let row = await database.get(
+    `SELECT *
+    FROM location
+    JOIN country_code ON pk_country_code_id = fk_country_code_id
+    JOIN state_code ON pk_state_code_id = fk_state_code_id
+    WHERE city_name = ? AND latitude = ? AND longitude = ? AND country_name = ?`,
+    [data.name, data.lat, data.lon, data.country]
+  );
+  if (row) return row.pk_location_id;
+  return false;
+}
+
+async function newLocationData(data) {
+  let newData = [];
+  for (const d of data) {
+    let row = await database.get(
+      `SELECT *
+    FROM location
+    JOIN country_code ON pk_country_code_id = fk_country_code_id
+    JOIN state_code ON pk_state_code_id = fk_state_code_id
+    WHERE city_name = ? AND latitude = ? AND longitude = ? AND country_name = ?`,
+      [d.name, d.lat, d.lon, d.country]
+    );
+    if (!row) newData.push(d);
+  }
+
+  return newData;
+}
+
+async function isReverseGeocodingInDb(data) {
+  let row = await database.get(
+    `SELECT *
+    FROM location
+    JOIN country_code ON pk_country_code_id = fk_country_code_id
+    JOIN state_code ON pk_state_code_id = fk_state_code_id
+    WHERE city_name = ? AND latitude = ? AND longitude = ? AND country_name = ?`,
+    [data.name, data.lat, data.lon, data.country]
   );
   if (row) return row.pk_location_id;
   return false;
@@ -409,20 +477,32 @@ async function isCoordinatesByZipOrPostCodeInDb(data) {
 async function insertOrUpdateLocation(requestBody) {
   if (requestBody.zip_code && requestBody.country_name) {
     let data = await apiCallCoordinatesByZipOrPostCode(requestBody);
-    let locationId = await isCoordinatesByZipOrPostCodeInDb(data);
-    if (locationId) {
-      await updateByCoordinatesByZipOrPostCode(data, locationId);
+    let newData = await newLocationData(data);
+    if (!newData) {
+      // await updateByCoordinatesByZipOrPostCode(data, locationId);
     } else {
-      await insertByCoordinatesByZipOrPostCode(data);
+      await insertByCoordinatesByZipOrPostCode(newData);
     }
   } else if (
     requestBody.city_name ||
     requestBody.state_name ||
     requestBody.country_name
   ) {
-    await insertByCoordinatesByLocationName(requestBody);
+    let data = await apiCallCoordinatesByLocationName(requestBody);
+    let newData = await newLocationData(data);
+    if (!newData) {
+      // await updateByCoordinatesByLocationName(data, locationId);
+    } else {
+      await insertByCoordinatesByLocationName(newData);
+    }
   } else if (requestBody.latitude && requestBody.longitude) {
-    await insertByReverseGeocoding(requestBody);
+    let data = await apiCallReverseGeocoding(requestBody);
+    let newData = await newLocationData(data);
+    if (!newData) {
+      // await updateByReverseGeocoding(data, locationId);
+    } else {
+      await insertByReverseGeocoding(newData);
+    }
   }
 }
 
@@ -435,11 +515,11 @@ async function updateTimezoneInLocation(timezone, locationId) {
 }
 
 // /location
-router.get('/', async (req, res, next) => {
+router.post('/', async (req, res, next) => {
   try {
     validation.endpoints.validateRequest_throws({
       request: req,
-      check: dataTemplate['/'].get.request,
+      check: dataTemplate['/'].post.request,
     });
 
     let requestBody = {
@@ -455,11 +535,13 @@ router.get('/', async (req, res, next) => {
 
     let params = Object.values(requestBody);
 
+    params = firstSubstring(params);
+
     let rowsLocation = await getRowsLocationsFromUserInput(params);
 
     if (!rowsLocation.length) {
       await insertOrUpdateLocation(requestBody);
-      rowsLocation = await getRowsLocationsFromUserInput(params);
+      rowsLocation = await getRowsLocationsFromUserInput_throws404(params);
     }
 
     const builtResponse = {
@@ -529,11 +611,11 @@ router.get('/:location_id/presentFuture', async (req, res, next) => {
     next(error);
   }
 });
-router.get('/:location_id/past', async (req, res, next) => {
+router.post('/:location_id/past', async (req, res, next) => {
   try {
     validation.endpoints.validateRequest_throws({
       request: req,
-      check: dataTemplate.past.get.request,
+      check: dataTemplate.past.post.request,
     });
 
     const paramsDay = [req.params.location_id, req.body.date_in_past.date];

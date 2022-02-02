@@ -3,7 +3,7 @@ const location = require('../../validation/routes/location');
 
 module.exports = {
   '/': {
-    get: {
+    post: {
       request: {
         body: {
           [tables.location().city_name().json]: tables.location().city_name()
@@ -58,7 +58,7 @@ module.exports = {
     },
   },
   past: {
-    get: {
+    post: {
       request: {
         params: {
           [tables.location().pk_location_id().json]: tables
