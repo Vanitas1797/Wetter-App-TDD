@@ -118,6 +118,9 @@ module.exports = {
     } AS wd WHERE wd.${
       tables.weather_data_day().fk_location_id.name
     } = ? AND wd.${tables.weather_data_day().date.name} = ?`,
+    getWeatherDataDayByLocationId: `SELECT * FROM ${
+      tables.weather_data_day.name
+    } AS wd WHERE wd.${tables.weather_data_day().fk_location_id.name} = ?`,
     getWeatherDataTimeByWeatherDataDayId: `SELECT * FROM ${
       tables.weather_data_time.name
     } AS wt WHERE wt.${

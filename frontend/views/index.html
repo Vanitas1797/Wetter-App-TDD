@@ -45,13 +45,13 @@
     <!-- TODO: wenn ort ausgesucht, dann einblenden -->
     <div id="div_weather">
 
-        <div id="location_description" style="margin: auto auto 10px auto;">Berlin, </div>
+        <div id="location_description" style="margin: auto auto 10px auto;">{Kein Ort}</div>
 
         <!-- zeit auswählen für die anzuzeigenden wetterdaten -->
         <div class="button_selecter option clickable" id="button_selecter_weather">
 
             <!-- auswahlbuttons -->
-            <div class="selected" id="button_selecter_present_future">
+            <div class="" id="button_selecter_present_future">
                 Gegenwart/Zukunft
             </div>
             <div class="" id="button_selecter_past">
@@ -64,7 +64,7 @@
         <div id="div_date_picker">
 
             <!-- datum einfügen -->
-            <div>Es liegen Wetterdaten bis zum <span id="available_weather_data">28.02.2017</span> vor.</div>
+            <div>Es liegen Wetterdaten bis zum <span id="available_weather_data">{Kein Datum}</span> vor.</div>
             <div><input type="date" id="picked_date"></div>
         </div>
 
@@ -81,12 +81,12 @@
                 <!-- wetterdaten -->
                 <div id="weather_data_hours" class="weather_data">
 
-                    <!-- einzelne tage mit wetterdaten -->
-                    <div class="weather_data_one_data_fragment" id="current_weather">
+                    <!-- einzelne stunden mit wetterdaten -->
+                    <div class="weather_data_one_data_fragment" id="current_weather1">
                         <div class="date" style="display: flex; justify-content: space-between;" title="Uhrzeit">
                             <img src="../images/uhr.png" id="image_calendar">
                             <div>
-                                <div>
+                                <div id="hours_time">
                                     08:00
                                 </div>
                             </div>
@@ -94,43 +94,37 @@
                         <div class="temperature" title="Temperatur">
                             <img src="../images/thermostat.png" id="image_thermostat">
                             <div>
-                                <div class="max_temp">21°C</div>
+                                <div id="hours_temp" class="max_temp">21°C</div>
                             </div>
                         </div>
                         <div class="regen" title="Regenwahrscheinlichkeit">
                             <img src="../images/regen.png">
-                            <div>50%</div>
+                            <div id="hours_pop">50%</div>
                         </div>
                         <div class="wind" title="Windgeschwindigkeit und aus welcher Richtung">
                             <img src="../images/wind.png">
                             <div>
-                                <div title="Windgeschwindigkeit">34 km/h</div>
+                                <div id="hours_wind_speed" title="Windgeschwindigkeit">34 km/h</div>
                                 <hr>
-                                <div title="aus Richtung">Nordosten</div>
+                                <div id="hours_wind_direction" title="aus Richtung">Nordosten</div>
                             </div>
                         </div>
                         <div class="wind_vane" title="Windböengeschwindigkeit">
                             <img src="../images/wind-vane.png">
                             <div>
-                                <div>55 km/h</div>
+                                <div id="hours_wind_vane">55 km/h</div>
                             </div>
                         </div>
                         <div class="humidity" title="Luftfeuchtigkeit">
                             <img src="../images/feuchtigkeit.png">
                             <div>
-                                <div>30%</div>
+                                <div id="hours_humidity">30%</div>
                             </div>
                         </div>
                         <div class="pressure" title="Luftdruck">
                             <img src="../images/gauge.png">
                             <div>
-                                <div>1055 hPa</div>
-                            </div>
-                        </div>
-                        <div class="cloudiness" title="Bewölktheit">
-                            <img src="../images/bewolkt.png">
-                            <div>
-                                <div>19%</div>
+                                <div id="hours_pressure">1055 hPa</div>
                             </div>
                         </div>
                     </div>
@@ -144,18 +138,18 @@
                 </div>
 
                 <!-- wetterdaten -->
-                <div id="weather_data_future" class="weather_data">
+                <div id="weather_data_days" class="weather_data">
 
                     <!-- einzelne tage mit wetterdaten -->
-                    <div class="weather_data_one_data_fragment" id="future_weather">
+                    <div class="weather_data_one_data_fragment" id="future_weather1">
                         <div class="date" style="display: flex; justify-content: space-between;"
                             title="Datum und Wochentag">
                             <img src="../images/kalender.png" id="image_calendar">
                             <div>
-                                <div>
+                                <div id="days_date">
                                     17.01.2022
                                 </div>
-                                <div>
+                                <div id="days_weekday">
                                     Montag
                                 </div>
                             </div>
@@ -163,45 +157,45 @@
                         <div class="temperature" title="Maximale Temperatur und minimale Temperatur">
                             <img src="../images/thermostat.png" id="image_thermostat">
                             <div>
-                                <div class="max_temp">21°C</div>
+                                <div id="days_max_temp" class="max_temp">21°C</div>
                                 <hr>
-                                <div class="min_temp">11°C</div>
+                                <div id="days_min_temp" class="min_temp">11°C</div>
                             </div>
                         </div>
                         <div class="regen" title="Regenwahrscheinlichkeit">
                             <img src="../images/regen.png">
-                            <div>50%</div>
+                            <div id="days_pop">50%</div>
                         </div>
                         <div class="wind" title="Windgeschwindigkeit und aus welcher Richtung">
                             <img src="../images/wind.png">
                             <div>
-                                <div title="Windgeschwindigkeit">34 km/h</div>
+                                <div id="days_wind_speed" title="Windgeschwindigkeit">34 km/h</div>
                                 <hr>
-                                <div title="aus Richtung">Nordosten</div>
+                                <div id="days_wind_direction" title="aus Richtung">Nordosten</div>
                             </div>
                         </div>
                         <div class="wind_vane" title="Windböengeschwindigkeit">
                             <img src="../images/wind-vane.png">
                             <div>
-                                <div>55 km/h</div>
+                                <div id="days_wind_vane">55 km/h</div>
                             </div>
                         </div>
                         <div class="humidity" title="Luftfeuchtigkeit">
                             <img src="../images/feuchtigkeit.png">
                             <div>
-                                <div>30%</div>
+                                <div id="days_humidity">30%</div>
                             </div>
                         </div>
                         <div class="pressure" title="Luftdruck">
                             <img src="../images/gauge.png">
                             <div>
-                                <div>1055 hPa</div>
+                                <div id="days_pressure">1055 hPa</div>
                             </div>
                         </div>
-                        <div class="cloudiness" title="Bewölktheit">
+                        <div class="weather" title="Wetterbericht">
                             <img src="../images/bewolkt.png">
                             <div>
-                                <div>19%</div>
+                                <div id="days_weather">19%</div>
                             </div>
                         </div>
                         <div class="sunrise_sunset" title="Sonnenaufgang und Sonnenuntergang">
@@ -209,11 +203,11 @@
                             <div>
                                 <div style="display: flex; justify-content: space-between;" title="Sonnenaufgang">
                                     <img src="../images/pfeile-nach-oben.png">
-                                    <div>08:34</div>
+                                    <div id="days_sunrise">08:34</div>
                                 </div>
                                 <div style="display: flex; justify-content: space-between;" title="Sonnenuntergang">
                                     <img src="../images/pfeile-nach-oben.png" style="transform: rotate(180deg);">
-                                    <div>15:57</div>
+                                    <div id="days_sunset">15:57</div>
                                 </div>
                             </div>
                         </div>
@@ -222,16 +216,16 @@
                             <div class="">
                                 <div style="display: flex; justify-content: space-between;" title="Mondaufgang">
                                     <img src="../images/pfeile-nach-oben.png">
-                                    <div>08:34</div>
+                                    <div id="days_moonrise">08:34</div>
                                 </div>
                                 <div style="display: flex; justify-content: space-between;" title="Monduntergang">
                                     <img src="../images/pfeile-nach-oben.png" style="transform: rotate(180deg);">
-                                    <div>15:57</div>
+                                    <div id="days_moonset">15:57</div>
                                 </div>
                                 <div style="display: flex; justify-content: space-between;" class="moonphase"
                                     title="Mondphase (0 - 1)">
                                     <img src="../images/mondphasen.png">
-                                    <div class="align">0.5</div>
+                                    <div id="days_moonphase" class="align">0.5</div>
                                 </div>
                             </div>
                         </div>

@@ -41,10 +41,11 @@ const picked_date = document.getElementById('picked_date');
 const div_weather_data = document.getElementById('div_weather_data');
 // hours
 const weather_data_hours = document.getElementById('weather_data_hours');
-const current_weather = document.getElementById('current_weather');
+const current_weather1 = document.getElementById('current_weather1');
+
 // future
-const weather_data_future = document.getElementById('weather_data_future');
-const future_weather = document.getElementById('future_weather');
+const weather_data_days = document.getElementById('weather_data_days');
+const future_weather1 = document.getElementById('future_weather1');
 
 // api
 // responses
@@ -69,6 +70,110 @@ let location_resp = {
     },
   ],
 };
+let earliest_date_resp = {
+  rows: {
+    earliest_date: '03.02.2022',
+  },
+};
+let past_resp = {
+  rows: {
+    day: {
+      pk_weather_data_day_id: 1,
+      fk_location_id: 1,
+      date: '02.02.2022',
+      max_temperature: 6.39,
+      min_temperature: 0.98,
+      sky_state_name: 'Leichter Regen',
+      wind_speed: 4.22,
+      wind_gust: 10.75,
+      wind_degree: 211,
+      fk_wind_direction: 'Süden',
+      precipitation_probability: 1,
+      humidity: 92,
+      air_pressure: 1014,
+      sunrise: '07:45:15',
+      sunset: '16:55:12',
+      weather_report: null,
+    },
+    hours: [
+      {
+        pk_weather_data_time_id: 1,
+        fk_weather_data_day_id: 1,
+        time: '16:00:00',
+        temperature: 6.39,
+        felt_temperature: 3.87,
+        sky_state_name: 'Leichter Regen',
+        wind_speed: 3.47,
+        wind_gust: 9.92,
+        wind_degree: 213,
+        fk_wind_direction: 'Süden',
+        precipitation_probability: 1,
+        humidity: 95,
+        air_pressure: 1004,
+      },
+    ],
+    earliest_date: null,
+  },
+};
+let future_resp = {
+  current_locale_time: '16:21:15',
+  rows: {
+    current: {
+      pk_weather_data_current_id: 1,
+      fk_location_id: 1,
+      date: '03.02.2022',
+      temperature: 6.41,
+      sky_state_name: 'Überwiegend bewölkt',
+      wind_speed: 3.58,
+      wind_gust: 7.15,
+      wind_degree: 212,
+      fk_wind_direction: 'Süden',
+      humidity: 95,
+      air_pressure: 1004,
+      sunrise: '07:45:15',
+      sunset: '16:55:12',
+      weather_report: null,
+      last_updated_date_time: '03.02.2022, 16:21:14',
+    },
+    day: [
+      {
+        pk_weather_data_day_id: 1,
+        fk_location_id: 1,
+        date: '03.02.2022',
+        max_temperature: 6.41,
+        min_temperature: 0.98,
+        sky_state_name: 'Leichter Regen',
+        wind_speed: 4.22,
+        wind_gust: 10.75,
+        wind_degree: 211,
+        fk_wind_direction: 'Süden',
+        precipitation_probability: 1,
+        humidity: 92,
+        air_pressure: 1014,
+        sunrise: '07:45:15',
+        sunset: '16:55:12',
+        weather_report: null,
+      },
+    ],
+    hour: [
+      {
+        pk_weather_data_time_id: 1,
+        fk_weather_data_day_id: 1,
+        time: '16:00:00',
+        temperature: 6.41,
+        felt_temperature: 3.9,
+        sky_state_name: 'Leichter Regen',
+        wind_speed: 3.47,
+        wind_gust: 9.92,
+        wind_degree: 213,
+        fk_wind_direction: 'Süden',
+        precipitation_probability: 1,
+        humidity: 95,
+        air_pressure: 1004,
+      },
+    ],
+  },
+};
 
 // events
 if (getCookie(global_variables.cookies.logged_user_id)) {
@@ -92,11 +197,11 @@ logout.onclick = () => {
   window.location.href = '../views/index.html';
 };
 input_search_location.oninput = async () => {
-  const inputValue = input_search_location.value.trim().split(',');
-
   selection_search_location.innerHTML = '';
 
-  if (inputValue.length) {
+  if (input_search_location.value) {
+    const inputValue = input_search_location.value.trim().split(',');
+
     const json = await fetchToBackend('http://localhost:3000/location', {
       city_name: inputValue[0] || '',
       country_name: inputValue[1] || '',
@@ -160,26 +265,124 @@ input_search_location.oninput = async () => {
 };
 
 async function toLocationData(locationId, description) {
-  button_selecter_present_future.onclick = () => {
+  button_selecter_present_future.onclick = async () => {
     button_selecter_present_future.className = 'selected';
     button_selecter_past.className = '';
     div_date_picker.style.display = 'none';
+    div_weather_data.style.visibility = 'visible';
+
+    location_description.innerHTML = description;
+
+    future_resp = await fetchToBackend(
+      `http://localhost:3000/location/${locationId}/presentFuture`
+    );
+
+    if (future_resp.isError) {
+      alert('Wetterdaten des gewählten Ortes sind nicht vorhanden!');
+      return;
+    }
+
+    let i = 0;
+    for (const hours of past_resp.rows.hours) {
+      let list_future_weathers = weather_data_days.querySelectorAll(
+        '.weather_data_one_data_fragment'
+      );
+
+      const days_date = list_future_weathers[i].querySelector('#days_date');
+      const days_weekday = list_future_weathers[i].querySelector('#days_weekday');
+      const days_max_temp = list_future_weathers[i].querySelector('#days_max_temp');
+      const days_min_temp = list_future_weathers[i].querySelector('#days_min_temp');
+      const days_pop = list_future_weathers[i].querySelector('#days_pop');
+      const days_wind_speed = list_future_weathers[i].querySelector('#days_wind_speed');
+      const days_wind_direction = list_future_weathers[i].querySelector(
+        '#days_wind_direction'
+      );
+      const days_wind_vane = list_future_weathers[i].querySelector('#days_wind_vane');
+      const days_humidity = list_future_weathers[i].querySelector('#days_humidity');
+      const days_pressure = list_future_weathers[i].querySelector('#days_pressure');
+      const days_weather = list_future_weathers[i].querySelector('#days_weather');
+      const days_sunrise = list_future_weathers[i].querySelector('#days_sunrise');
+      const days_sunset = list_future_weathers[i].querySelector('#days_sunset');
+      const days_moonrise = list_future_weathers[i].querySelector('#days_moonrise');
+      const days_moonset = list_future_weathers[i].querySelector('#days_moonset');
+      const days_moonphase = list_future_weathers[i].querySelector('#days_moonphase');
+
+      // TODO
+
+      i > 0 ? weather_data_days.append(list_future_weathers[i]) : null;
+
+      i++;
+    }
   };
+
   button_selecter_past.onclick = async () => {
     button_selecter_present_future.className = '';
     button_selecter_past.className = 'selected';
     div_date_picker.style.display = 'block';
+    div_weather_data.style.visibility = 'visible';
 
-    available_weather_data.innerHTML = '';
+    earliest_date_resp = await fetchToBackend(
+      `http://localhost:3000/location/${locationId}/past`
+    );
+
+    available_weather_data.innerHTML =
+      earliest_date_resp.rows.earliest_date || '{Kein Datum}';
   };
 
-  location_description.innerHTML = description;
+  picked_date.onchange = async () => {
+    if (picked_date.value) {
+      past_resp = await fetchToBackend(
+        `http://localhost:3000/location/${locationId}/past`,
+        {
+          date_in_past: {
+            date: picked_date.value,
+          },
+        }
+      );
 
-  const future_data = await fetchToBackend(
-    `http://localhost:3000/location/${locationId}/presentFuture`
-  );
+      if (past_resp.isError) {
+        alert('Das gewählte Datum ist nicht vorhanden!');
+        return;
+      }
 
-  picked_date.onchange = () => {};
+      let i = 0;
+      for (const hours of past_resp.rows.hours) {
+        let list_current_weathers = weather_data_hours.querySelectorAll(
+          '.weather_data_one_data_fragment'
+        );
+
+        const hours_time =
+          list_current_weathers[i].querySelector('#hours_time');
+        const hours_temp =
+          list_current_weathers[i].querySelector('#hours_temp');
+        const hours_pop = list_current_weathers[i].querySelector('#hours_pop');
+        const hours_wind_speed =
+          list_current_weathers[i].querySelector('#hours_wind_speed');
+        const hours_wind_direction = list_current_weathers[i].querySelector(
+          '#hours_wind_direction'
+        );
+        const hours_wind_vane =
+          list_current_weathers[i].querySelector('#hours_wind_vane');
+        const hours_humidity =
+          list_current_weathers[i].querySelector('#hours_humidity');
+        const hours_pressure =
+          list_current_weathers[i].querySelector('#hours_pressure');
+
+        hours_time.innerHTML = hours.time;
+        hours_temp.innerHTML = hours.temperature;
+        hours_pop.innerHTML = hours.precipitation_probability;
+        hours_wind_speed.innerHTML = hours.wind_speed;
+        hours_wind_direction.innerHTML = hours.fk_wind_direction;
+        hours_wind_vane.innerHTML = hours.wind_gust;
+        hours_humidity.innerHTML = hours.humidity;
+        hours_pressure.innerHTML = hours.air_pressure;
+
+        i > 0 ? weather_data_hours.append(list_current_weathers[i]) : null;
+
+        i++;
+      }
+    }
+  };
 
   div_weather.style.display = 'flex';
 }

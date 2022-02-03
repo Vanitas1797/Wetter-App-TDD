@@ -152,6 +152,8 @@ img {
   margin-bottom: 50px;
   width: 90%;
   margin-inline: auto;
+  /* wenn button selected, dann visible */
+  visibility: hidden;
 }
 .weather_data {
   display: flex;

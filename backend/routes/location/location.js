@@ -80,7 +80,7 @@ async function insertRowCurrent(data) {
     current.pressure,
     getTimeString(current.sunrise, data.timezone_offset),
     getTimeString(current.sunset, data.timezone_offset),
-    null,
+    current.weather[0].description,
     getDateTimeString(current.dt, data.timezone_offset),
   ];
   await database.run_throws400(
@@ -111,7 +111,7 @@ async function insertRowsDay(data) {
       day.pressure,
       getTimeString(day.sunrise, data.timezone_offset),
       getTimeString(day.sunset, data.timezone_offset),
-      null,
+      day.weather[0].description,
     ];
     await database.run_throws400(
       database.queries.insertWeatherDataDay,
@@ -618,22 +618,34 @@ router.post('/:location_id/past', async (req, res, next) => {
       check: dataTemplate.past.post.request,
     });
 
-    const paramsDay = [req.params.location_id, req.body.date_in_past.date];
+    if (!req.body.date_in_past.date) {
+      const paramsEarliestDate = [req.params.location_id];
 
-    let rowDay = await database.get_throws404(
-      database.queries2.getWeatherDataDayByLocationIdAndDate,
-      paramsDay
-    );
-    const paramsTime = [rowDay.pk_weather_data_day_id];
-    let rowsTime = await database.all_throws404(
-      database.queries2.getWeatherDataTimeByWeatherDataDayId,
-      paramsTime
-    );
+      let rowsDay = await database.all(
+        database.queries2.getWeatherDataDayByLocationId,
+        paramsEarliestDate
+      );
+
+      var earliest_date = getDate(rowsDay[0].date).getTime();
+    } else {
+      const paramsDay = [req.params.location_id, req.body.date_in_past.date];
+
+      var rowDay = await database.get_throws404(
+        database.queries2.getWeatherDataDayByLocationIdAndDate,
+        paramsDay
+      );
+      const paramsTime = [rowDay.pk_weather_data_day_id];
+      var rowsTime = await database.all_throws404(
+        database.queries2.getWeatherDataTimeByWeatherDataDayId,
+        paramsTime
+      );
+    }
 
     const builtResponse = {
       rows: {
         day: rowDay,
         hours: rowsTime,
+        earliest_date: earliest_date ? getDateString(earliest_date) : null,
       },
     };
 

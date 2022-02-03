@@ -66,7 +66,7 @@ module.exports = {
             .pk_location_id().validation,
         },
         body: {
-          date_in_past: { date: '', timezone: '' },
+          date_in_past: { date: '' },
         },
         validation: {
           body: {
