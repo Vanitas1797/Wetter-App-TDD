@@ -414,7 +414,7 @@ function getWeatherDataHours(hours) {
     hours_humidity.innerHTML =
       hour.humidity.toString().replace('.', ',') + ' %';
     hours_pressure.innerHTML =
-      hour.air_pressure.toString().replace('.', ',') + ' pa';
+      hour.air_pressure.toString().replace('.', ',') + ' hPa';
     hours_weather.innerHTML = hour.sky_state_name;
 
     i++;
@@ -476,7 +476,7 @@ function getWeatherDataDays(days) {
       day.wind_gust.toString().replace('.', ',') + ' km/h';
     days_humidity.innerHTML = day.humidity.toString().replace('.', ',') + ' %';
     days_pressure.innerHTML =
-      day.air_pressure.toString().replace('.', ',') + ' pa';
+      day.air_pressure.toString().replace('.', ',') + ' hPa';
     days_weather.innerHTML = day.sky_state_name;
     days_sunrise.innerHTML = day.sunrise;
     days_sunset.innerHTML = day.sunset;
