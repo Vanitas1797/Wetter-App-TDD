@@ -261,6 +261,11 @@ input_search_location.oninput = async () => {
             input_search_location.value = '';
             selection_search_location.style.visibility = 'hidden';
             div_weather.style.display = 'none';
+            button_selecter_present_future.className = '';
+            button_selecter_past.className = '';
+            button_selecter_weather.style.display = 'none';
+            div_weather_data.style.display = 'none';
+            div_date_picker.style.display = 'none';
             await toLocationData(v.pk_location_id, opt.innerHTML);
           };
 
@@ -342,6 +347,11 @@ async function toLocationData(locationId, description) {
       );
 
       if (past_resp.isError) {
+        div_weather_data.style.display = 'none';
+        weather_data_hours.innerHTML = '';
+        weather_data_days.innerHTML = '';
+        weather_data_hours.append(current_weather0);
+        weather_data_days.append(future_weather0);
         alert('Das gewählte Datum ist nicht vorhanden!');
         return;
       }
@@ -354,6 +364,7 @@ async function toLocationData(locationId, description) {
   };
 
   div_weather.style.display = 'flex';
+  button_selecter_weather.style.display = 'flex';
 }
 
 function getWeatherDataHours(hours) {

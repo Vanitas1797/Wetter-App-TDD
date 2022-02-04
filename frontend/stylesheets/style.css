@@ -40,7 +40,7 @@ img {
   text-decoration: none;
 }
 .search_location {
-  width: fit-content;
+  width: 75%;
   margin: auto auto 50px auto;
 }
 .search_location input {
@@ -69,7 +69,7 @@ img {
   color: white;
 }
 .next_element {
-  margin: 50px auto;
+  margin:auto auto 50px auto;
 }
 #burgermenu {
   height: 100px;
@@ -100,6 +100,7 @@ img {
 }
 #selection_search_location {
   max-height: 208px;
+  height: 208px;
   overflow: auto;
   visibility: hidden;
 }
@@ -141,22 +142,20 @@ img {
   text-align: center;
 }
 #div_weather {
-  margin: auto;
   /* if location for weather data has been chosen: display: block; */
   display: none;
   flex-direction: column;
 }
 #div_weather_data {
   margin: auto;
-  margin-bottom: 50px;
   width: 100%;
   margin-inline: auto;
   /* wenn button selected, dann block */
   display: none;
 }
 #div_weather_data_days{
-  width: fit-content;
   max-width: 100%;
+  width: fit-content;
 }
 .weather_data {
   display: flex;
@@ -192,6 +191,7 @@ img {
 }
 #div_date_picker {
   margin: auto;
+  margin-bottom: 50px;
   /* if "Vergangenheit" geklickt, dann display: block; */
   display: none;
 }
