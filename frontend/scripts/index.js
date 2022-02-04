@@ -24,6 +24,7 @@ const selection_search_location = document.getElementById(
 const div_weather = document.getElementById('div_weather');
 // buttons
 const location_description = document.getElementById('location_description');
+const star_img = document.getElementById('star_img');
 const button_selecter_weather = document.getElementById(
   'button_selecter_weather'
 );
@@ -186,6 +187,7 @@ let future_resp = {
 if (getCookie(global_variables.cookies.logged_user_id)) {
   link_login.style.display = 'none';
   burgermenu.style.display = 'block';
+  star_img.style.visibility = 'visible';
 }
 
 image_burger.onclick = () => {
@@ -194,14 +196,14 @@ image_burger.onclick = () => {
   } else selection_burgermenu.style.visibility = 'visible';
 };
 favoriten.onclick = () => {
-  window.location.href = '../views/favorites.html';
+  window.location.href = 'favorites.html';
 };
 settings.onclick = () => {
   // window.location.href = '../views/favorites.html';
 };
 logout.onclick = () => {
   deleteCookie(global_variables.cookies.logged_user_id);
-  window.location.href = '../views/index.html';
+  window.location.href = 'index.html';
 };
 input_search_location.oninput = async () => {
   selection_search_location.innerHTML = '';
@@ -266,6 +268,7 @@ input_search_location.oninput = async () => {
             button_selecter_weather.style.display = 'none';
             div_weather_data.style.display = 'none';
             div_date_picker.style.display = 'none';
+            star_img.src="../images/star.png"
             await toLocationData(v.pk_location_id, opt.innerHTML);
           };
 
@@ -280,6 +283,19 @@ input_search_location.oninput = async () => {
 
 async function toLocationData(locationId, description) {
   location_description.innerHTML = description;
+
+  star_img.onclick = async () => {
+    const json = await fetchToBackend(
+      `http://localhost:3000/user/${getCookie(
+        global_variables.cookies.logged_user_id
+      )}/favorites`,
+      {
+        location_id: locationId,
+      }
+    );
+
+    if (!json.isError) star_img.src = '../images/star_gefüllt.png';
+  };
 
   button_selecter_present_future.onclick = async () => {
     div_weather_data.style.display = 'none';

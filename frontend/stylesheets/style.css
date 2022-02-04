@@ -69,7 +69,7 @@ img {
   color: white;
 }
 .next_element {
-  margin:auto auto 50px auto;
+  margin: auto auto 50px auto;
 }
 #burgermenu {
   height: 100px;
@@ -77,6 +77,9 @@ img {
   position: relative;
   /* if logged in: display: block; */
   display: none;
+}
+#star_img {
+  visibility: hidden;
 }
 #image_burger {
   height: inherit;
@@ -103,6 +106,14 @@ img {
   height: 208px;
   overflow: auto;
   visibility: hidden;
+}
+#div_weather > div {
+  display: flex;
+  justify-content: center;
+}
+#div_weather > div img {
+  width: 50px;
+  height: 50px;
 }
 .button_selecter {
   text-align: center;
@@ -153,7 +164,7 @@ img {
   /* wenn button selected, dann block */
   display: none;
 }
-#div_weather_data_days{
+#div_weather_data_days {
   max-width: 100%;
   width: fit-content;
 }
@@ -246,7 +257,10 @@ input {
 .favorite_category > * {
   margin: auto;
 }
-#bin_img {
+#bin_img0 {
   width: 50px;
   height: 50px;
+}
+#div_favorites {
+  display: none;
 }

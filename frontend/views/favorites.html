@@ -24,8 +24,8 @@
         </div>
     </nav>
 
-    <div class="form">
-        <div>
+    <div class="form" id="div_favorites">
+        <div class="one_favorite_fragment">
             <div style="display: flex; flex-direction: row; align-items: center;">
                 <div class="flex_list" style="width: 100%; margin-right: 50px;">
                     <div>
@@ -55,9 +55,13 @@
                         <div>Land</div>
                         <div id="country">Deutschland</div>
                     </div>
+                    <div>
+                        <div>Staat</div>
+                        <div id="state">{Kein Staat}</div>
+                    </div>
                 </div>
-                <div class="clickable" title="Entfernen">
-                    <img src="../images/mulleimer.png" id="bin_img">
+                <div class="clickable bin_img" title="Entfernen">
+                    <img src="../images/mulleimer.png" id="bin_img0">
                 </div>
             </div>
             <div class="parting_line"></div>
@@ -65,6 +69,6 @@
     </div>
 </body>
 
-<script src="../scripts/favorites.js"></script>
+<script src="../scripts/favorites.js" type="module"></script>
 
 </html>

@@ -62,6 +62,7 @@ module.exports = {
         body: {
           email: '',
           password: '',
+          confirm_password: '',
         },
         validation: { body: user.register },
       },

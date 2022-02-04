@@ -1,8 +1,8 @@
-GET http://localhost:3000/user/1/favorites HTTP/1.1
+GET http://localhost:3000/user/3/favorites HTTP/1.1
 
 ###
 
-POST http://localhost:3000/user/1/favorites HTTP/1.1
+POST http://localhost:3000/user/3/favorites HTTP/1.1
 Content-Type: application/json
 
 {
@@ -35,7 +35,8 @@ Content-Type: application/json
 
 {
     "email": "user3@user.user",
-    "password": "right"
+    "password": "right",
+    "confirm_password": "right"
 }
 
 ###

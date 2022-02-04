@@ -44,7 +44,7 @@ router.post('/:user_id/favorites', async (req, res, next) => {
         body.location_id,
       ]);
 
-      await database.run_throws400(queries.favorites.saveFavorite, [
+      await database.run_throws400(database.queries2.saveFavorite, [
         req.params.user_id,
         body.location_id,
       ]);
@@ -109,6 +109,10 @@ router.post('/register', async (req, res, next) => {
     exe: async () => {
       let body = object.register.post.request.body;
       body = req.body;
+
+      if (body.password !== body.confirm_password) {
+        throw createHttpError.ExpectationFailed('Passwords are wrong');
+      }
 
       await database.run_throws400(database.queries2.registerUser, [
         body.email,

@@ -2,6 +2,7 @@ const email = document.getElementById('email');
 const password = document.getElementById('password');
 const button_login = document.getElementById('button_login');
 import { setCookie } from './cookie.js';
+import { global_variables } from './globals.js';
 import { fetchToBackend } from './http.js';
 
 async function whoIsLoggedIn(params) {

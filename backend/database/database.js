@@ -106,7 +106,17 @@ module.exports = {
   queries2: {
     getSavedLocationsByUserId: `SELECT * FROM ${
       tables.saved_location.name
-    } AS sl WHERE sl.${tables.saved_location().fk_user_id.name} = ?`,
+    } AS sl JOIN ${tables.location.name} AS l ON l.${
+      tables.location().pk_location_id.name
+    } = sl.${tables.saved_location().fk_location_id.name} JOIN ${
+      tables.country_code.name
+    } AS c ON c.${tables.country_code().pk_country_code_id.name} = l.${
+      tables.location().fk_country_code_id.name
+    } JOIN ${tables.state_code.name} AS s ON s.${
+      tables.state_code().pk_state_code_id.name
+    } = l.${tables.location().fk_state_code_id.name} WHERE sl.${
+      tables.saved_location().fk_user_id.name
+    } = ?`,
     saveFavorite: `INSERT INTO ${tables.saved_location.name} (${
       tables.saved_location().fk_user_id.name
     }, ${tables.saved_location().fk_location_id.name}) VALUES (?, ?)`,
