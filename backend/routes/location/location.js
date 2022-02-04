@@ -15,6 +15,7 @@ const {
   getDate,
   getDateTimeString,
   getTimeString,
+  getWeekDay,
 } = require('../../help/time');
 const openWeather = require('../../api/openWeather');
 const openWeatherResponses = require('../../objects/apis/openWeather/responses');
@@ -70,6 +71,9 @@ async function insertRowCurrent(data) {
   let insertCurrent = [
     data.locationId,
     getDateString(current.dt, data.timezone_offset),
+    getWeekDay(
+      getDate(getDateString(current.dt, data.timezone_offset)).getDay()
+    ),
     current.temp,
     current.weather[0].description,
     current.wind_speed,
@@ -80,7 +84,7 @@ async function insertRowCurrent(data) {
     current.pressure,
     getTimeString(current.sunrise, data.timezone_offset),
     getTimeString(current.sunset, data.timezone_offset),
-    current.weather[0].description,
+    null,
     getDateTimeString(current.dt, data.timezone_offset),
   ];
   await database.run_throws400(
@@ -99,6 +103,7 @@ async function insertRowsDay(data) {
     let insertDaily = [
       data.locationId,
       getDateString(day.dt, data.timezone_offset),
+      getWeekDay(getDate(getDateString(day.dt, data.timezone_offset)).getDay()),
       day.temp.max,
       day.temp.min,
       day.weather[0].description,
@@ -111,7 +116,10 @@ async function insertRowsDay(data) {
       day.pressure,
       getTimeString(day.sunrise, data.timezone_offset),
       getTimeString(day.sunset, data.timezone_offset),
-      day.weather[0].description,
+      getTimeString(day.moonrise, data.timezone_offset),
+      getTimeString(day.moonset, data.timezone_offset),
+      day.moon_phase,
+      null,
     ];
     await database.run_throws400(
       database.queries.insertWeatherDataDay,

@@ -82,7 +82,7 @@
                 <div id="weather_data_hours" class="weather_data">
 
                     <!-- einzelne stunden mit wetterdaten -->
-                    <div class="weather_data_one_data_fragment" id="current_weather1">
+                    <div class="weather_data_one_data_fragment" id="current_weather0">
                         <div class="date" style="display: flex; justify-content: space-between;" title="Uhrzeit">
                             <img src="../images/uhr.png" id="image_calendar">
                             <div>
@@ -127,13 +127,19 @@
                                 <div id="hours_pressure">1055 hPa</div>
                             </div>
                         </div>
+                        <div class="weather" title="Wetterbericht">
+                            <img src="../images/wetter-app.png">
+                            <div>
+                                <div id="hours_weather">leichter Regen</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- zukünftiges wetter -->
-            <div class="next_element">
-                <div class="design element_title">
+            <div id="div_weather_data_days" class="next_element">
+                <div id="seven_days_title" class="design element_title">
                     7 Tage
                 </div>
 
@@ -141,15 +147,15 @@
                 <div id="weather_data_days" class="weather_data">
 
                     <!-- einzelne tage mit wetterdaten -->
-                    <div class="weather_data_one_data_fragment" id="future_weather1">
+                    <div class="weather_data_one_data_fragment" id="future_weather0">
                         <div class="date" style="display: flex; justify-content: space-between;"
                             title="Datum und Wochentag">
                             <img src="../images/kalender.png" id="image_calendar">
                             <div>
-                                <div id="days_date">
+                                <div id="days_date" title="Datum">
                                     17.01.2022
                                 </div>
-                                <div id="days_weekday">
+                                <div id="days_weekday" title="Wochentag">
                                     Montag
                                 </div>
                             </div>
@@ -193,9 +199,9 @@
                             </div>
                         </div>
                         <div class="weather" title="Wetterbericht">
-                            <img src="../images/bewolkt.png">
+                            <img src="../images/wetter-app.png">
                             <div>
-                                <div id="days_weather">19%</div>
+                                <div id="days_weather">leichter Regen</div>
                             </div>
                         </div>
                         <div class="sunrise_sunset" title="Sonnenaufgang und Sonnenuntergang">

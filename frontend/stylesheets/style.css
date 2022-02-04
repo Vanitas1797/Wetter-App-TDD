@@ -21,7 +21,6 @@ img {
   border-width: 1px;
   padding: 0 60px;
   margin-bottom: 50px;
-  position: sticky;
   top: 0px;
 }
 #website_title {
@@ -150,10 +149,14 @@ img {
 #div_weather_data {
   margin: auto;
   margin-bottom: 50px;
-  width: 90%;
+  width: 100%;
   margin-inline: auto;
-  /* wenn button selected, dann visible */
-  visibility: hidden;
+  /* wenn button selected, dann block */
+  display: none;
+}
+#div_weather_data_days{
+  width: fit-content;
+  max-width: 100%;
 }
 .weather_data {
   display: flex;
@@ -165,6 +168,7 @@ img {
   display: flex;
   justify-content: space-between;
   margin: 10px;
+  width: 220px;
 }
 .weather_data > .weather_data_one_data_fragment > * > *:last-child {
   margin: 0 auto;
@@ -174,11 +178,11 @@ img {
 }
 .weather_data_one_data_fragment {
   display: flex;
-  flex-direction: column;
   border-color: black;
   border-style: solid;
   border-width: 1px;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  flex-direction: column;
 }
 .weather_data_one_data_fragment:not(:last-child) {
   border-width: 1px 0 1px 1px;
