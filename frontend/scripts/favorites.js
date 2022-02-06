@@ -22,8 +22,8 @@ let favorite_resp = {
       country_code_2: 'DE',
       country_code_3: 'DEU',
       pk_state_code_id: 57,
-      state_name: '{null}',
-      state_code_2: '{null}',
+      state_name: null,
+      state_code_2: null,
     },
   ],
 };
@@ -65,25 +65,32 @@ async function loadFavorites() {
 
       list_favorites[i].id =
         list_favorites[i].id.slice(0, list_favorites[i].id.length - 1) + i;
+
+      let bin_img = list_favorites[i].querySelector('#bin_img' + (i - 1));
+      bin_img.id = 'bin_img' + i;
     }
 
-    let latitude = list_favorites[i].querySelector('#latitude').innerHTML;
-    let longitude = list_favorites[i].querySelector('#longitude').innerHTML;
-    let zip = list_favorites[i].querySelector('#zip').innerHTML;
-    let city = list_favorites[i].querySelector('#city').innerHTML;
-    let country = list_favorites[i].querySelector('#country').innerHTML;
-    let state = list_favorites[i].querySelector('#state').innerHTML;
-    let bin_img = list_favorites[i].querySelector('#bin_img' + i);
-    bin_img.id = 'bin_img' + i;
+    let latitude = list_favorites[i].querySelector('#latitude');
+    let longitude = list_favorites[i].querySelector('#longitude');
+    let zip = list_favorites[i].querySelector('#zip');
+    let city = list_favorites[i].querySelector('#city');
+    let country = list_favorites[i].querySelector('#country');
+    let state = list_favorites[i].querySelector('#state');
 
-    latitude = row.latitude;
-    longitude = row.longitude;
-    zip = row.zip_code;
-    city = row.city_name;
-    country = row.country_name;
-    state = row.state_name;
+    latitude.innerHTML = row.latitude
+      .toPrecision(4)
+      .toString()
+      .replace('.', ',');
+    longitude.innerHTML = row.longitude
+      .toPrecision(4)
+      .toString()
+      .replace('.', ',');
+    zip.innerHTML = row.zip_code || '{Keine Postleitzahl}';
+    city.innerHTML = row.city_name;
+    country.innerHTML = row.country_name || '{Kein Land}';
+    state.innerHTML = row.state_name || '{Kein Staat}';
 
-    bin_img = document.getElementById('bin_img' + i);
+    let bin_img = document.getElementById('bin_img' + i);
     bin_img.onclick = () => {
       bin_img.parentElement.parentElement.parentElement.remove();
     };
