@@ -1,4 +1,4 @@
-import { getCookie } from './cookie.js';
+import cookie from './cookie.js';
 import { global_variables } from './globals.js';
 import { fetchToBackend } from './http.js';
 
@@ -35,13 +35,13 @@ window.onload = async () => {
   await loadFavorites();
 };
 
-if (!getCookie(global_variables.cookies.logged_user_id)) {
+if (!cookie.getCookie(global_variables.cookies.logged_user_id)) {
   window.location.href = 'index.html';
 }
 
 async function loadFavorites() {
   favorite_resp = await fetchToBackend(
-    `http://localhost:3000/user/${getCookie(
+    `http://localhost:3000/user/${cookie.getCookie(
       global_variables.cookies.logged_user_id
     )}/favorites`
   );
@@ -68,6 +68,10 @@ async function loadFavorites() {
 
       let bin_img = list_favorites[i].querySelector('#bin_img' + (i - 1));
       bin_img.id = 'bin_img' + i;
+      let favorite_data_div = list_favorites[i].querySelector(
+        '#favorite_data_div' + (i - 1)
+      );
+      favorite_data_div.id = 'favorite_data_div' + i;
     }
 
     let latitude = list_favorites[i].querySelector('#latitude');
@@ -90,8 +94,29 @@ async function loadFavorites() {
     country.innerHTML = row.country_name || '{Kein Land}';
     state.innerHTML = row.state_name || '{Kein Staat}';
 
+    let favorite_data = document.getElementById('favorite_data_div' + i);
+    favorite_data.onclick = async () => {
+      // let description = getLocationDescription(row);
+      // await selectLocation(row.pk_location_id, description);
+      // window.location.href = 'index.html';
+    };
+
     let bin_img = document.getElementById('bin_img' + i);
-    bin_img.onclick = () => {
+    bin_img.onclick = async () => {
+      let resp = await fetchToBackend(
+        `http://localhost:3000/user/${cookie.getCookie(
+          global_variables.cookies.logged_user_id
+        )}/favorites`,
+        {
+          location_id: row.pk_location_id,
+        },
+        'delete'
+      );
+
+      if (resp.isError) {
+        return;
+      }
+
       bin_img.parentElement.parentElement.parentElement.remove();
     };
 

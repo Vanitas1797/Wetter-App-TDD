@@ -5,6 +5,8 @@ const createHttpError = require('http-errors');
 const { tables } = require('../objects/database/tables');
 
 const db = new sqlite.Database(dbConfig.storage);
+console.log(dbConfig.storage);
+
 module.exports = {
   queries: {
     getAllFavoritesOfOneUser: fs
@@ -104,6 +106,11 @@ module.exports = {
       .toString(),
   },
   queries2: {
+    deleteSavedLocationByUserId: `DELETE FROM ${
+      tables.saved_location.name
+    } WHERE ${tables.saved_location().fk_user_id.name} = ? AND ${
+      tables.saved_location().fk_location_id.name
+    } = ?`,
     getSavedLocationsByUserId: `SELECT * FROM ${
       tables.saved_location.name
     } AS sl JOIN ${tables.location.name} AS l ON l.${

@@ -305,12 +305,12 @@ async function apiCallCurrentAndForecastWeatherData_throws(reqParamLocationId) {
 async function apiCallCoordinatesByZipOrPostCode(requestBody) {
   let row = await database.get(database.queries.getCountry, [
     requestBody.country_name,
-    '',
-    '',
+    requestBody.country_name,
+    requestBody.country_name,
   ]);
   let url = apiUrls.geocoding.directGeocoding.coordinatesByZipOrPostCode(
     requestBody.zip_code,
-    row.country_code_2
+    row ? row.country_code_2 : null
   );
   let apiResponse = await getDataFromApi(url);
   let data = coordinatesByZipOrPostCode;
@@ -485,7 +485,7 @@ async function isReverseGeocodingInDb(data) {
 async function insertOrUpdateLocation(requestBody) {
   if (requestBody.zip_code && requestBody.country_name) {
     let data = await apiCallCoordinatesByZipOrPostCode(requestBody);
-    let newData = await newLocationData(data);
+    let newData = await newLocationData([data]);
     if (!newData) {
       // await updateByCoordinatesByZipOrPostCode(data, locationId);
     } else {

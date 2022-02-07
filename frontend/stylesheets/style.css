@@ -257,7 +257,7 @@ input {
 .favorite_category > * {
   margin: auto;
 }
-#bin_img0 {
+.bin_img img {
   width: 50px;
   height: 50px;
 }

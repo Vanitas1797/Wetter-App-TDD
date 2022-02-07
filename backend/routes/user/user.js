@@ -10,6 +10,24 @@ const bcrypt = require('../../help/bcrypt');
 const router = express.Router();
 
 // /user
+router.delete('/:user_id/favorites', async (req, res, next) => {
+  await initRouter({
+    next: next,
+    request: { req: req, check: object.favorites.delete.request },
+    response: res,
+    exe: async () => {
+      let body = object.favorites.delete.request.body;
+      body = req.body;
+
+      await database.run_throws400(
+        database.queries2.deleteSavedLocationByUserId,
+        [req.params.user_id, body.location_id]
+      );
+
+      return object.favorites.delete.response;
+    },
+  });
+});
 router.get('/:user_id/favorites', async (req, res, next) => {
   try {
     validation.endpoints.validateRequest_throws({
@@ -32,7 +50,7 @@ router.get('/:user_id/favorites', async (req, res, next) => {
   }
 });
 router.post('/:user_id/favorites', async (req, res, next) => {
-  routes.initRouter({
+  await routes.initRouter({
     next: next,
     request: { req: req, check: object.favorites.post.request },
     response: res,
@@ -54,7 +72,7 @@ router.post('/:user_id/favorites', async (req, res, next) => {
   });
 });
 router.put('/:user_id/resetPassword', async (req, res, next) => {
-  initRouter({
+  await initRouter({
     next: next,
     request: { req: req, check: object.resetPassword.put.request },
     response: res,
@@ -75,7 +93,7 @@ router.put('/:user_id/resetPassword', async (req, res, next) => {
   });
 });
 router.delete('/:user_id/account', async (req, res, next) => {
-  initRouter({
+  await initRouter({
     next: next,
     request: { req: req, check: object.account.delete.request },
     response: res,
@@ -102,7 +120,7 @@ router.delete('/:user_id/account', async (req, res, next) => {
   });
 });
 router.post('/register', async (req, res, next) => {
-  initRouter({
+  await initRouter({
     next: next,
     response: res,
     request: { req: req, check: object.register.post.request },
@@ -124,7 +142,7 @@ router.post('/register', async (req, res, next) => {
   });
 });
 router.get('/forgotPassword', async (req, res, next) => {
-  initRouter({
+  await initRouter({
     next: next,
     response: res,
     request: {
@@ -150,7 +168,7 @@ router.get('/forgotPassword', async (req, res, next) => {
   });
 });
 router.post('/login', async (req, res, next) => {
-  initRouter({
+  await initRouter({
     next: next,
     response: res,
     request: {
@@ -188,7 +206,7 @@ router.post('/login', async (req, res, next) => {
   });
 });
 router.get('/logout', async (req, res, next) => {
-  initRouter({
+  await initRouter({
     next: next,
     response: res,
     request: { req: req, check: object.logout.get.request },

@@ -1,5 +1,6 @@
-import { deleteCookie, getCookie } from './cookie.js';
+import cookie from './cookie.js';
 import { global_variables } from './globals.js';
+// import { getLocationDescription, selectLocation } from './help.js';
 import { fetchToBackend } from './http.js';
 // alle elemente
 
@@ -184,11 +185,13 @@ let future_resp = {
 };
 
 // events
-if (getCookie(global_variables.cookies.logged_user_id)) {
-  link_login.style.display = 'none';
-  burgermenu.style.display = 'block';
-  star_img.style.visibility = 'visible';
-}
+window.onload = () => {
+  if (cookie.getCookie(global_variables.cookies.logged_user_id)) {
+    link_login.style.visibility = 'hidden';
+    burgermenu.style.display = 'block';
+    star_img.style.visibility = 'visible';
+  }
+};
 
 image_burger.onclick = () => {
   if (selection_burgermenu.style.visibility === 'visible') {
@@ -224,22 +227,12 @@ input_search_location.oninput = async () => {
     if (!json.isError) {
       location_resp = json;
       if (location_resp.rows.length) {
-        location_resp.rows.forEach((v) => {
+        location_resp.rows.forEach((row) => {
           let opt = document.createElement('option');
 
           opt.className = 'clickable';
 
-          opt.innerHTML = `${v.city_name || '{keine Stadt}'}, ${
-            v.country_name == '{null}' || !v.country_name
-              ? '{kein Land}'
-              : v.country_name
-          }, ${
-            v.state_name == '{null}' || !v.state_name
-              ? '{kein Staat}'
-              : v.state_name
-          }, ${v.zip_code || '{keine Postleitzahl}'}, ${
-            v.latitude || '{kein Breitengrad}'
-          }, ${v.longitude || '{kein Längengrad}'}`;
+          opt.innerHTML = getLocationDescription(row);
 
           opt.onclick = async () => {
             const url = new URLSearchParams(window.location.search);
@@ -260,16 +253,7 @@ input_search_location.oninput = async () => {
 
             // document.location.href = '?' + url;
 
-            input_search_location.value = '';
-            selection_search_location.style.visibility = 'hidden';
-            div_weather.style.display = 'none';
-            button_selecter_present_future.className = '';
-            button_selecter_past.className = '';
-            button_selecter_weather.style.display = 'none';
-            div_weather_data.style.display = 'none';
-            div_date_picker.style.display = 'none';
-            star_img.src="../images/star.png"
-            await toLocationData(v.pk_location_id, opt.innerHTML);
+            await selectLocation(row.pk_location_id, opt.innerHTML);
           };
 
           selection_search_location.append(opt);
@@ -286,7 +270,7 @@ async function toLocationData(locationId, description) {
 
   star_img.onclick = async () => {
     const json = await fetchToBackend(
-      `http://localhost:3000/user/${getCookie(
+      `http://localhost:3000/user/${cookie.getCookie(
         global_variables.cookies.logged_user_id
       )}/favorites`,
       {
@@ -522,4 +506,41 @@ function getDateStringFormatted(date) {
   };
 
   return d() + '.' + m() + '.' + new_date.getFullYear().toString();
+}
+
+export async function selectLocation(locationId, description) {
+  input_search_location.value = '';
+  selection_search_location.style.visibility = 'hidden';
+  div_weather.style.display = 'none';
+  button_selecter_present_future.className = '';
+  button_selecter_past.className = '';
+  button_selecter_weather.style.display = 'none';
+  div_weather_data.style.display = 'none';
+  div_date_picker.style.display = 'none';
+  let favorite_resp = await fetchToBackend(
+    `http://localhost:3000/user/${cookie.getCookie(
+      global_variables.cookies.logged_user_id
+    )}/favorites`
+  );
+
+  if (!favorite_resp.isError) {
+    if (favorite_resp.rows.find((v) => v.pk_location_id === locationId)) {
+      star_img.src = '../images/star_gefüllt.png';
+    }
+  } else star_img.src = '../images/star.png';
+  await toLocationData(locationId, description);
+}
+
+export function getLocationDescription(row) {
+  return `${row.city_name || '{keine Stadt}'}, ${
+    row.country_name == '{null}' || !row.country_name
+      ? '{kein Land}'
+      : row.country_name
+  }, ${
+    row.state_name == '{null}' || !row.state_name
+      ? '{kein Staat}'
+      : row.state_name
+  }, ${row.zip_code || '{keine Postleitzahl}'}, ${
+    row.latitude || '{kein Breitengrad}'
+  }, ${row.longitude || '{kein Längengrad}'}`;
 }

@@ -19,7 +19,7 @@ app.use((req, res, next) => {
     'Origin, X-Requested-With, Content-Type, Accept'
   );
   res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
   // res.header('Access-Control-Max-Age', 1000 * 3600 * 24);
   next();
 });
@@ -39,10 +39,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/user', require('./routes/user/user'));
 app.use('/location', require('./routes/location/location'));
 
-fs.copyFileSync(
-  `backend/database/db/wetter-app-dev-copy.db`,
-  `backend/database/db/wetter-app-dev.db`
-);
+// fs.copyFileSync(
+//   `backend/database/db/wetter-app-dev-copy.db`,
+//   `backend/database/db/wetter-app-dev.db`
+// );
 
 // error handler
 app.use(function (err, req, res, next) {

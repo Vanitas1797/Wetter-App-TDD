@@ -1,7 +1,7 @@
-export async function fetchToBackend(url, body) {
+export async function fetchToBackend(url, body, method) {
   const response = await fetch(url, {
     body: JSON.stringify(body) || null,
-    method: body ? 'post' : 'get',
+    method: method || (body ? 'post' : 'get'),
     headers: {
       'Content-Type': 'application/json',
     },

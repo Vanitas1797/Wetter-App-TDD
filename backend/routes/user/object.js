@@ -4,6 +4,18 @@ const user = require('../../validation/routes/user');
 
 module.exports = {
   favorites: {
+    delete: {
+      request: {
+        params: {
+          user_id: '',
+        },
+        body: {
+          location_id: '',
+        },
+        validation: {},
+      },
+      response: { message: 'Favorite has been deleted' },
+    },
     get: {
       request: {
         params: {
