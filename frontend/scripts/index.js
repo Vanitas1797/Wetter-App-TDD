@@ -1,9 +1,8 @@
-import cookie from './cookie.js';
-import { global_variables } from './globals.js';
-// import { getLocationDescription, selectLocation } from './help.js';
-import { fetchToBackend } from './http.js';
-// alle elemente
+import * as cookie from './cookie.js';
+import * as globals from './globals.js';
+import * as http from './http.js';
 
+// alle elemente
 const html = document.getElementsByTagName('html');
 
 // oberer Rand
@@ -186,7 +185,7 @@ let future_resp = {
 
 // events
 window.onload = () => {
-  if (cookie.getCookie(global_variables.cookies.logged_user_id)) {
+  if (cookie.getCookie(globals.cookies.logged_user_id)) {
     link_login.style.visibility = 'hidden';
     burgermenu.style.display = 'block';
     star_img.style.visibility = 'visible';
@@ -205,7 +204,7 @@ settings.onclick = () => {
   // window.location.href = '../views/favorites.html';
 };
 logout.onclick = () => {
-  deleteCookie(global_variables.cookies.logged_user_id);
+  deleteCookie(globals.cookies.logged_user_id);
   window.location.href = 'index.html';
 };
 input_search_location.oninput = async () => {
@@ -214,7 +213,7 @@ input_search_location.oninput = async () => {
   if (input_search_location.value) {
     const inputValue = input_search_location.value.trim().split(',');
 
-    const json = await fetchToBackend('http://localhost:3000/location', {
+    const json = await http.fetchToBackend('http://localhost:3000/location', {
       city_name: inputValue[0] || '',
       country_name: inputValue[1] || '',
       state_name: inputValue[2] || '',
@@ -269,9 +268,9 @@ async function toLocationData(locationId, description) {
   location_description.innerHTML = description;
 
   star_img.onclick = async () => {
-    const json = await fetchToBackend(
+    const json = await http.fetchToBackend(
       `http://localhost:3000/user/${cookie.getCookie(
-        global_variables.cookies.logged_user_id
+        globals.cookies.logged_user_id
       )}/favorites`,
       {
         location_id: locationId,
@@ -288,7 +287,7 @@ async function toLocationData(locationId, description) {
     weather_data_hours.append(current_weather0);
     weather_data_days.append(future_weather0);
 
-    future_resp = await fetchToBackend(
+    future_resp = await http.fetchToBackend(
       `http://localhost:3000/location/${locationId}/presentFuture`
     );
 
@@ -315,7 +314,7 @@ async function toLocationData(locationId, description) {
     weather_data_hours.append(current_weather0);
     weather_data_days.append(future_weather0);
 
-    earliest_date_resp = await fetchToBackend(
+    earliest_date_resp = await http.fetchToBackend(
       `http://localhost:3000/location/${locationId}/past`,
       {
         date_in_past: {
@@ -337,7 +336,7 @@ async function toLocationData(locationId, description) {
 
   picked_date.onchange = async () => {
     if (picked_date.value) {
-      past_resp = await fetchToBackend(
+      past_resp = await http.fetchToBackend(
         `http://localhost:3000/location/${locationId}/past`,
         {
           date_in_past: {
@@ -405,7 +404,8 @@ function getWeatherDataHours(hours) {
     hours_temp.innerHTML =
       hour.temperature.toString().replace('.', ',') + ' °C';
     hours_pop.innerHTML =
-      hour.precipitation_probability.toString().replace('.', ',') + ' %';
+      (hour.precipitation_probability * 100).toString().replace('.', ',') +
+      ' %';
     hours_wind_speed.innerHTML =
       hour.wind_speed.toString().replace('.', ',') + ' km/h';
     hours_wind_direction.innerHTML = hour.fk_wind_direction;
@@ -468,7 +468,7 @@ function getWeatherDataDays(days) {
     days_min_temp.innerHTML =
       day.min_temperature.toString().replace('.', ',') + ' °C';
     days_pop.innerHTML =
-      day.precipitation_probability.toString().replace('.', ',') + ' %';
+      (day.precipitation_probability * 100).toString().replace('.', ',') + ' %';
     days_wind_speed.innerHTML =
       day.wind_speed.toString().replace('.', ',') + ' km/h';
     days_wind_direction.innerHTML = day.fk_wind_direction;
@@ -508,7 +508,7 @@ function getDateStringFormatted(date) {
   return d() + '.' + m() + '.' + new_date.getFullYear().toString();
 }
 
-export async function selectLocation(locationId, description) {
+async function selectLocation(locationId, description) {
   input_search_location.value = '';
   selection_search_location.style.visibility = 'hidden';
   div_weather.style.display = 'none';
@@ -517,9 +517,9 @@ export async function selectLocation(locationId, description) {
   button_selecter_weather.style.display = 'none';
   div_weather_data.style.display = 'none';
   div_date_picker.style.display = 'none';
-  let favorite_resp = await fetchToBackend(
+  let favorite_resp = await http.fetchToBackend(
     `http://localhost:3000/user/${cookie.getCookie(
-      global_variables.cookies.logged_user_id
+      globals.cookies.logged_user_id
     )}/favorites`
   );
 
@@ -531,7 +531,7 @@ export async function selectLocation(locationId, description) {
   await toLocationData(locationId, description);
 }
 
-export function getLocationDescription(row) {
+function getLocationDescription(row) {
   return `${row.city_name || '{keine Stadt}'}, ${
     row.country_name == '{null}' || !row.country_name
       ? '{kein Land}'

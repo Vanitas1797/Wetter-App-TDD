@@ -179,6 +179,7 @@ img {
   justify-content: space-between;
   margin: 10px;
   width: 220px;
+  align-items: center;
 }
 .weather_data > .weather_data_one_data_fragment > * > *:last-child {
   margin: 0 auto;
